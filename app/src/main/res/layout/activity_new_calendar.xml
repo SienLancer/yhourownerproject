@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="50dp"
+    tools:context=".activities.NewCalendarActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Calendar" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_marginTop="30px"
+        android:layout_height="wrap_content"
+        android:text="Name of the week" />
+
+    <EditText
+        android:id="@+id/week_name_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Name of the week"
+        android:inputType="text"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/start_day_title_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30px"
+        android:text="Start day" />
+
+    <TextView
+        android:id="@+id/start_day_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="Click here to select the calendar start date" />
+
+    <TextView
+        android:id="@+id/end_day_title_tv"
+        android:layout_width="match_parent"
+        android:layout_marginTop="30px"
+        android:layout_height="wrap_content"
+        android:text="End day" />
+
+    <TextView
+        android:id="@+id/end_day_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Click here to select the calendar end date" />
+
+    <Button
+        android:id="@+id/add_calendar_btn"
+        android:layout_width="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_height="wrap_content"
+        android:text="Add" />
+</LinearLayout>

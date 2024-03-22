@@ -13,6 +13,12 @@
         android:theme="@style/Theme.YhourOwnerProject"
         tools:targetApi="31">
         <activity
+            android:name=".activities.NewCalendarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.CalendarActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SplashActivity"
             android:exported="true">
             <intent-filter>
@@ -23,29 +29,22 @@
         </activity>
         <activity
             android:name=".activities.SignInForOwnerActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".activities.SignUpForOwnerActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".activities.SignUpSuccessOwner"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".activities.MainActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".activities.BottomTabActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".activities.SignUpForStaffActivity"
-            android:exported="false">
-        </activity>
-
+            android:exported="false" />
     </application>
 
 </manifest>
