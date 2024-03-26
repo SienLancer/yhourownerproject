@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 public class CalendarActivity extends AppCompatActivity {
     EditText ip_shift_et;
     Button add_shift_btn,cancel_btn;
+    TextView realtime_table;
     Dialog dialog;
     //CustomDialogFragment dialogFragment;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -53,13 +54,7 @@ public class CalendarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_calendar);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         init();
-        //dialogFragment = (CustomDialogFragment) getChildFragmentManager().findFragmentByTag("custom_popup_dialog");
-//        CustomDialogFragment dialogFragment = (CustomDialogFragment) getTargetFragment();
-//
-//        ip_shift_et=dialogFragment.getEditText();
-//        add_shift_btn =dialogFragment.getButton();
 
-//        cancel_btn =dialogFragment.getView().findViewById(R.id.cancel_btn);
         dialog=new Dialog(CalendarActivity.this);
         dialog.setContentView(R.layout.custom_popup_dialog);
 
@@ -163,6 +158,7 @@ public class CalendarActivity extends AppCompatActivity {
                                 if (lastWeekSnapshot != null) {
                                     // Hiển thị dữ liệu từ tuần cuối cùng lên giao diện người dùng
                                     // Lấy dữ liệu từ tuần cuối cùng và hiển thị lên giao diện
+                                    realtime_table.setText(lastWeekSnapshot.child("startDay").getValue(String.class));
                                     Mon1.setText(lastWeekSnapshot.child("mon1").getValue(String.class));
                                     Mon2.setText(lastWeekSnapshot.child("mon2").getValue(String.class));
                                     Mon3.setText(lastWeekSnapshot.child("mon3").getValue(String.class));
@@ -752,6 +748,7 @@ public class CalendarActivity extends AppCompatActivity {
         eveningSstart=findViewById(R.id.eveningSstart);
         eveningSend=findViewById(R.id.eveningSend);
 
+        realtime_table = findViewById(R.id.realtime_table);
 
 
 

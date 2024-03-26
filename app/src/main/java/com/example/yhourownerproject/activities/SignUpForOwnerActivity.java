@@ -61,7 +61,7 @@ public class SignUpForOwnerActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()){
                         String id = task.getResult().getUser().getUid();
-                        Users users = new Users(id, "", "", "", "", username, password, 0);
+                        Users users = new Users(id, "", "", "", "", username, password, 0, "");
                         firebaseDatabase.getReference().child("User").child(id).setValue(users);
 
                         Toast.makeText(getApplicationContext(), "Đăng kí thành công!", Toast.LENGTH_SHORT).show();
