@@ -32,6 +32,13 @@ public class Week {
     String startDay;
     String endDay;
 
+
+    public Week(String id, String startDay, String endDay){
+        this.id = id;
+        this.startDay = startDay;
+        this.endDay = endDay;
+    }
+
     public Week(String id, String mon1, String mon2, String mon3, String tue1, String tue2, String tue3, String wed1, String wed2, String wed3, String thu1, String thu2, String thu3, String fri1, String fri2, String fri3, String sat1, String sat2, String sat3, String sun1, String sun2, String sun3, String morningSStart, String morningSend, String afternoonSStart, String afternoonSend, String eveningSStart, String eveningSend, String startDay, String endDay) {
         this.id = id;
         this.mon1 = mon1;

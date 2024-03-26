@@ -115,6 +115,7 @@ public class SignInForOwnerActivity extends AppCompatActivity {
                                 }
                             });
                 }else {
+                    progressDialog.dismiss();
                     Toast.makeText(getApplicationContext(), "Đăng nhập không thành công!", Toast.LENGTH_SHORT).show();
                 }
             }

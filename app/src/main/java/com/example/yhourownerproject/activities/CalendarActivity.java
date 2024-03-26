@@ -3,6 +3,7 @@ package com.example.yhourownerproject.activities;
 import android.app.Dialog;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,10 +19,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.yhourownerproject.R;
+import com.example.yhourownerproject.roles.Week;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -68,56 +73,145 @@ public class CalendarActivity extends AppCompatActivity {
 
     }
 
+//    public void getDataTable(){
+//        FirebaseUser user = mAuth.getCurrentUser();
+//        if (user != null) {
+//            listener = firebaseDatabase.getReference().addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                    String userId = user.getUid();
+//                    //String shopId = snapshot.child("Shop").child("shop1").child("id").getValue(String.class);
+//                    for (DataSnapshot shopSnapshot : snapshot.child("Shop").getChildren()) {
+//                        // Lấy ID của mỗi child
+//                        String shopId = shopSnapshot.child("id").getValue(String.class);
+//
+//                        // Xử lý ID theo nhu cầu của bạn
+//                        //Log.d("ShopId", shopId);
+//                        String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+//                        //Mon1.setText(ownerShopId);
+//                        if (ownerShopId.equals(shopId)){
+//                            Mon1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("mon1").getValue(String.class));
+//                            Mon2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("mon2").getValue(String.class));
+//                            Mon3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("mon3").getValue(String.class));
+//                            Tue1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("tue1").getValue(String.class));
+//                            Tue2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("tue2").getValue(String.class));
+//                            Tue3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("tue3").getValue(String.class));
+//                            Wed1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("wed1").getValue(String.class));
+//                            Wed2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("wed2").getValue(String.class));
+//                            Wed3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("wed3").getValue(String.class));
+//                            Thu1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("thu1").getValue(String.class));
+//                            Thu2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("thu2").getValue(String.class));
+//                            Thu3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("thu3").getValue(String.class));
+//                            Fri1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("fri1").getValue(String.class));
+//                            Fri2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("fri2").getValue(String.class));
+//                            Fri3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("fri3").getValue(String.class));
+//                            Sat1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sat1").getValue(String.class));
+//                            Sat2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sat2").getValue(String.class));
+//                            Sat3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sat3").getValue(String.class));
+//                            Sun1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sun1").getValue(String.class));
+//                            Sun2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sun2").getValue(String.class));
+//                            Sun3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sun3").getValue(String.class));
+//                            morningSstart.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("morningSstart").getValue(String.class));
+//                            morningSend.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("morningSend").getValue(String.class));
+//                            afternoonSstart.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("afternoonSstart").getValue(String.class));
+//
+//                            afternoonSend.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("afternoonSend").getValue(String.class));
+//                            eveningSstart.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("eveningSstart").getValue(String.class));
+//                            eveningSend.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("eveningSend").getValue(String.class));
+//                        }
+//                    }
+//
+//
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//                    Toast.makeText(CalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//
+//
+//
+//        }else {
+//            Toast.makeText(CalendarActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
     public void getDataTable(){
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            listener = firebaseDatabase.getReference().addValueEventListener(new ValueEventListener() {
+            String userId = user.getUid();
+            DatabaseReference userRef = firebaseDatabase.getReference().child("User").child(userId).child("shopID");
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String userId = user.getUid();
-                    //String shopId = snapshot.child("Shop").child("shop1").child("id").getValue(String.class);
-                    for (DataSnapshot shopSnapshot : snapshot.child("Shop").getChildren()) {
-                        // Lấy ID của mỗi child
-                        String shopId = shopSnapshot.child("id").getValue(String.class);
+                    String ownerShopId = snapshot.getValue(String.class);
+                    if (ownerShopId != null) {
+                        DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar");
+                        shopRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                // Lấy tất cả các tuần
+                                Iterable<DataSnapshot> weeks = dataSnapshot.getChildren();
+                                DataSnapshot lastWeekSnapshot = null;
 
-                        // Xử lý ID theo nhu cầu của bạn
-                        //Log.d("ShopId", shopId);
-                        String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
-                        //Mon1.setText(ownerShopId);
-                        if (ownerShopId.equals(shopId)){
-                            Mon1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("mon1").getValue(String.class));
-                            Mon2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("mon2").getValue(String.class));
-                            Mon3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("mon3").getValue(String.class));
-                            Tue1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("tue1").getValue(String.class));
-                            Tue2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("tue2").getValue(String.class));
-                            Tue3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("tue3").getValue(String.class));
-                            Wed1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("wed1").getValue(String.class));
-                            Wed2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("wed2").getValue(String.class));
-                            Wed3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("wed3").getValue(String.class));
-                            Thu1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("thu1").getValue(String.class));
-                            Thu2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("thu2").getValue(String.class));
-                            Thu3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("thu3").getValue(String.class));
-                            Fri1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("fri1").getValue(String.class));
-                            Fri2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("fri2").getValue(String.class));
-                            Fri3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("fri3").getValue(String.class));
-                            Sat1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sat1").getValue(String.class));
-                            Sat2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sat2").getValue(String.class));
-                            Sat3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sat3").getValue(String.class));
-                            Sun1.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sun1").getValue(String.class));
-                            Sun2.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sun2").getValue(String.class));
-                            Sun3.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sun3").getValue(String.class));
-                            morningSstart.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("morningSstart").getValue(String.class));
-                            morningSend.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("morningSend").getValue(String.class));
-                            afternoonSstart.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("afternoonSstart").getValue(String.class));
+                                // Lặp qua tất cả các tuần và lưu lại tuần cuối cùng
+                                for (DataSnapshot weekSnapshot : weeks) {
+                                    lastWeekSnapshot = weekSnapshot;
+                                }
 
-                            afternoonSend.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("afternoonSend").getValue(String.class));
-                            eveningSstart.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("eveningSstart").getValue(String.class));
-                            eveningSend.setText(snapshot.child("Shop").child(ownerShopId).child("Calendar").child("week1").child("eveningSend").getValue(String.class));
-                        }
+                                if (lastWeekSnapshot != null) {
+                                    // Hiển thị dữ liệu từ tuần cuối cùng lên giao diện người dùng
+                                    // Lấy dữ liệu từ tuần cuối cùng và hiển thị lên giao diện
+                                    Mon1.setText(lastWeekSnapshot.child("mon1").getValue(String.class));
+                                    Mon2.setText(lastWeekSnapshot.child("mon2").getValue(String.class));
+                                    Mon3.setText(lastWeekSnapshot.child("mon3").getValue(String.class));
+                                    Tue1.setText(lastWeekSnapshot.child("tue1").getValue(String.class));
+
+                                    Tue2.setText(lastWeekSnapshot.child("tue2").getValue(String.class));
+                                    Tue3.setText(lastWeekSnapshot.child("tue3").getValue(String.class));
+
+                                    Wed1.setText(lastWeekSnapshot.child("wed1").getValue(String.class));
+
+                                    Wed2.setText(lastWeekSnapshot.child("wed2").getValue(String.class));
+                                    Wed3.setText(lastWeekSnapshot.child("wed3").getValue(String.class));
+                                    Thu1.setText(lastWeekSnapshot.child("thu1").getValue(String.class));
+                                    Thu2.setText(lastWeekSnapshot.child("thu2").getValue(String.class));
+                                    Thu3.setText(lastWeekSnapshot.child("thu3").getValue(String.class));
+
+                                    Fri1.setText(lastWeekSnapshot.child("fri1").getValue(String.class));
+                                    Fri2.setText(lastWeekSnapshot.child("fri2").getValue(String.class));
+
+                                    Fri3.setText(lastWeekSnapshot.child("fri3").getValue(String.class));
+                                    Sat1.setText(lastWeekSnapshot.child("sat1").getValue(String.class));
+                                    Sat2.setText(lastWeekSnapshot.child("sat2").getValue(String.class));
+                                    Sat3.setText(lastWeekSnapshot.child("sat3").getValue(String.class));
+                                    Sun1.setText(lastWeekSnapshot.child("sun1").getValue(String.class));
+                                    Sun2.setText(lastWeekSnapshot.child("sun2").getValue(String.class));
+                                    Sun3.setText(lastWeekSnapshot.child("sun3").getValue(String.class));
+                                    morningSstart.setText(lastWeekSnapshot.child("morningSstart").getValue(String.class));
+                                    morningSend.setText(lastWeekSnapshot.child("morningSend").getValue(String.class));
+                                    afternoonSstart.setText(lastWeekSnapshot.child("afternoonSstart").getValue(String.class));
+                                    afternoonSend.setText(lastWeekSnapshot.child("afternoonSend").getValue(String.class));
+                                    eveningSstart.setText(lastWeekSnapshot.child("eveningSstart").getValue(String.class));
+                                    eveningSend.setText(lastWeekSnapshot.child("eveningSend").getValue(String.class));
+
+
+                                    // Tiếp tục với các TextView khác tương tự
+                                    // ...
+                                } else {
+                                    Toast.makeText(CalendarActivity.this, "No weeks found", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(CalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(CalendarActivity.this, "Shop ID not found for this user", Toast.LENGTH_SHORT).show();
                     }
-
-//                    Mon1.setText(snapshot.child("Shop").child("Calendar").child("week1").child("mon1").getValue(String.class));
-
                 }
 
                 @Override
@@ -125,13 +219,11 @@ public class CalendarActivity extends AppCompatActivity {
                     Toast.makeText(CalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
                 }
             });
-
-
-
-        }else {
+        } else {
             Toast.makeText(CalendarActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void itemClick() {
         Mon1.setOnClickListener(new View.OnClickListener() {
@@ -228,7 +320,8 @@ public class CalendarActivity extends AppCompatActivity {
         Fri2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialog();
+                dialog.show();
+                ip_shift_et.setText(Fri2.getText().toString());
 
             }
         });
@@ -274,26 +367,106 @@ public class CalendarActivity extends AppCompatActivity {
 
             }
         });
+//        Sun3.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                showDialog();
+//
+//                add_shift_btn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        FirebaseUser user = mAuth.getCurrentUser();
+//                        if (user != null) {
+//                            listener = firebaseDatabase.getReference().addValueEventListener(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                                    String userId = user.getUid();
+//                                    String dataItem = ip_shift_et.getText().toString();
+//                                    String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+//                                    firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sun3").setValue(dataItem);
+//                                    dialog.dismiss();
+//                                    Toast.makeText(CalendarActivity.this, "Added Successfully", Toast.LENGTH_SHORT).show();
+//
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(@NonNull DatabaseError error) {
+//                                    Toast.makeText(CalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
+//                                }
+//                            });
+//                        }else {
+//                            Toast.makeText(CalendarActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                    }
+//                });
+//            }
+//        });
+
         Sun3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialog();
+                // Hiển thị dialog để nhập dữ liệu
+                dialog.show();
+                ip_shift_et.setText(Sun3.getText().toString());
 
+                // Xử lý sự kiện khi người dùng nhấn vào nút add_shift_btn trong dialog
                 add_shift_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            listener = firebaseDatabase.getReference().addValueEventListener(new ValueEventListener() {
+                            String userId = user.getUid();
+                            String dataItem = ip_shift_et.getText().toString();
+                            DatabaseReference userRef = firebaseDatabase.getReference().child("User").child(userId).child("shopID");
+                            userRef.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    String userId = user.getUid();
-                                    String dataItem = ip_shift_et.getText().toString();
-                                    String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
-                                    firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar").child("week1").child("sun3").setValue(dataItem);
-                                    dialog.dismiss();
-                                    Toast.makeText(CalendarActivity.this, "Added Successfully", Toast.LENGTH_SHORT).show();
+                                    String ownerShopId = snapshot.getValue(String.class);
+                                    if (ownerShopId != null) {
+                                        DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar");
 
+                                        shopRef.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                // Lấy tất cả các tuần
+                                                Iterable<DataSnapshot> weeks = dataSnapshot.getChildren();
+                                                DataSnapshot lastWeekSnapshot = null;
+
+                                                // Lặp qua tất cả các tuần và lưu lại tuần cuối cùng
+                                                for (DataSnapshot weekSnapshot : weeks) {
+                                                    lastWeekSnapshot = weekSnapshot;
+                                                }
+
+                                                if (lastWeekSnapshot != null) {
+                                                    // Cập nhật dữ liệu của Sun3 trong tuần cuối cùng
+                                                    DatabaseReference sun3Ref = lastWeekSnapshot.child("sun3").getRef();
+                                                    sun3Ref.setValue(dataItem).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()) {
+                                                                dialog.dismiss();
+                                                                Toast.makeText(CalendarActivity.this, "Added Successfully", Toast.LENGTH_SHORT).show();
+                                                                Sun3.setText(dataItem);
+                                                            } else {
+                                                                Toast.makeText(CalendarActivity.this, "Failed to add data", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+                                                } else {
+                                                    Toast.makeText(CalendarActivity.this, "No weeks found", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Toast.makeText(CalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(CalendarActivity.this, "Shop ID not found for this user", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
 
                                 @Override
@@ -301,10 +474,9 @@ public class CalendarActivity extends AppCompatActivity {
                                     Toast.makeText(CalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                 }
                             });
-                        }else {
+                        } else {
                             Toast.makeText(CalendarActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
                         }
-
                     }
                 });
             }

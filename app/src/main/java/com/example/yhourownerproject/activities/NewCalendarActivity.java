@@ -3,6 +3,7 @@ package com.example.yhourownerproject.activities;
 import static android.content.ContentValues.TAG;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.yhourownerproject.R;
+import com.example.yhourownerproject.fragments.OwnerCalendarFragment;
 import com.example.yhourownerproject.roles.Week;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -111,7 +113,9 @@ public class NewCalendarActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         String userId = user.getUid();
         if (user != null) {
-            firebaseDatabase.getReference().addValueEventListener(new ValueEventListener() {
+            // Lấy thời gian hiện tại
+            long timestamp = System.currentTimeMillis();
+            firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
@@ -137,10 +141,11 @@ public class NewCalendarActivity extends AppCompatActivity {
                                     // Kiểm tra weekName với các weekKey trong danh sách
                                     boolean weekExists = false;
                                     String weekName = week_name_et.getText().toString();
+                                    Log.d(TAG, "Week Name: " + weekName);
                                     String startDay = start_day_tv.getText().toString();
                                     String endDay = end_day_tv.getText().toString();
                                     for (String weekKey : weekKeys) {
-                                        if (weekName.equals(weekKey)) {
+                                        if (weekName.equalsIgnoreCase(weekKey)) {
                                             weekExists = true;
                                             // Nếu weekName trùng với weekKey
                                             Toast.makeText(NewCalendarActivity.this, "Week already exists", Toast.LENGTH_SHORT).show();
@@ -151,26 +156,30 @@ public class NewCalendarActivity extends AppCompatActivity {
                                         // Nếu weekName không trùng với bất kỳ weekKey nào trong danh sách
                                         //Toast.makeText(NewCalendarActivity.this, "Week added", Toast.LENGTH_SHORT).show();
                                         // Thực hiện các hành động cần thiết khi thêm tuần mới vào lịch của cửa
-                                        Week week = new Week(weekName,"", "", "", "", "", "", "", "", "",
+                                        Week week = new Week(timestamp+weekName,"", "", "", "", "", "", "", "", "",
                                               "", "", "", "", "", "", "", "", "", "", "",
                                                "", "", "", "", "", "",
                                                 "", startDay, endDay);
-
-                                        firebaseDatabase.getReference().child("Shop").child(shopKey).child("Calendar").child(weekName).setValue(week).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        String weekNameTimestamp = timestamp+ weekName;
+                                        firebaseDatabase.getReference().child("Shop").child(shopKey).child("Calendar").child(weekNameTimestamp).setValue(week).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
                                                     Toast.makeText(NewCalendarActivity.this, "Calendar added", Toast.LENGTH_SHORT).show();
+
                                                 } else {
                                                     Toast.makeText(NewCalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                                 }
                                             }
                                         });
+//                                        Intent intent = new Intent(NewCalendarActivity.this, OwnerCalendarFragment.class);
+//                                        startActivity(intent);
                                         break; // Kết thúc vòng lặp khi thêm tuần mới thành công
                                     }
 
                                     break; // Kết thúc vòng lặp khi đã tìm thấy cửa hàng
                                 }
+                                break; // Kết thúc vòng lặp khi đã tìm thấy cửa hàng
                             }
                             if (!shopFound) {
                                 Toast.makeText(NewCalendarActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();

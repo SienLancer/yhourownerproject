@@ -13,6 +13,7 @@ import android.widget.Button;
 import com.example.yhourownerproject.R;
 import com.example.yhourownerproject.activities.CalendarActivity;
 import com.example.yhourownerproject.activities.NewCalendarActivity;
+import com.example.yhourownerproject.activities.WeekListActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,6 +63,15 @@ public class OwnerCalendarFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), NewCalendarActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        list_calendar_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), WeekListActivity.class);
+                startActivity(intent);
+
             }
         });
 
