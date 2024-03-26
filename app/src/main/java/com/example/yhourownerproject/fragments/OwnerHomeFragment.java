@@ -105,22 +105,12 @@ public class OwnerHomeFragment extends Fragment {
 
 
     public void realtimeQrcode(){
-        String dateString = null;
 
-        LocalDate today = LocalDate.now();
-
-        int year = today.getYear();
-        int month = today.getMonthValue();
-        int day = today.getDayOfMonth();
-
-        dateString = day + "/" + month + "/" + year;
 
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            String userId = user.getUid();
-            String qrcode = dateString + userId;
-            String encodedString = Base64.encodeToString(qrcode.getBytes(), Base64.DEFAULT);
+
             firebaseDatabase.getReference().child("QRCode").child("codescan")
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
