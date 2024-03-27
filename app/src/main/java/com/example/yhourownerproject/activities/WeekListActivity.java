@@ -54,12 +54,6 @@ public class WeekListActivity extends AppCompatActivity {
     }
 
     private void loadDataFromFirebase() {
-        // Example:
-//         Week week1 = new Week("Week 1", "2024-03-21", "2024-03-27");
-//         Week week2 = new Week("Week 2", "2024-03-28", "2024-04-03");
-//         weekList.add(week1);
-//         weekList.add(week2);
-//         adapter.notifyDataSetChanged();
         FirebaseUser user = mAuth.getCurrentUser();
         String userId = user.getUid();
         if (user != null) {

@@ -28,14 +28,4 @@
         app:layout_constraintTop_toBottomOf="@+id/today"
         android:scaleType="fitCenter"/>
 
-    <Button
-        android:id="@+id/rf_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
-        android:text="Refresh"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
