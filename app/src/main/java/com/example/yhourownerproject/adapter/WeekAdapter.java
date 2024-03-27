@@ -1,6 +1,5 @@
 package com.example.yhourownerproject.adapter;
 
-import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.yhourownerproject.R;
-import com.example.yhourownerproject.activities.CalendarActivity;
 import com.example.yhourownerproject.activities.WeekDetailActivity;
 import com.example.yhourownerproject.roles.Week;
 
@@ -64,10 +62,10 @@ public class WeekAdapter extends RecyclerView.Adapter<WeekAdapter.ViewHolder> {
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            weekNameTextView = itemView.findViewById(R.id.week_name_tv);
+            weekNameTextView = itemView.findViewById(R.id.staff_name_tv);
             startDayTextView = itemView.findViewById(R.id.start_day_tv);
             endDayTextView = itemView.findViewById(R.id.end_day_tv);
-            detailWeekButton = itemView.findViewById(R.id.detail_week_btn);
+            detailWeekButton = itemView.findViewById(R.id.detail_staff_btn);
         }
     }
 }

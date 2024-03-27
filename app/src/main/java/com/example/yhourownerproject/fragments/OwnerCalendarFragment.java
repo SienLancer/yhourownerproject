@@ -15,11 +15,7 @@ import com.example.yhourownerproject.activities.CalendarActivity;
 import com.example.yhourownerproject.activities.NewCalendarActivity;
 import com.example.yhourownerproject.activities.WeekListActivity;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link OwnerCalendarFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class OwnerCalendarFragment extends Fragment {
     private View mView;
     Button view_calendar_btn, new_calendar_btn, list_calendar_btn;
