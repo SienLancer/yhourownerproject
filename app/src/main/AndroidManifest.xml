@@ -13,6 +13,9 @@
         android:theme="@style/Theme.YhourOwnerProject"
         tools:targetApi="31">
         <activity
+            android:name=".activities.StaffDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.StaffListActivity"
             android:exported="false" />
         <activity

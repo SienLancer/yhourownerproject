@@ -68,12 +68,18 @@ public class StaffListActivity extends AppCompatActivity {
 //                                boolean shopFound = false;
                                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                                     String userKey = userSnapshot.getKey();
+                                    Integer userRole = userSnapshot.child("role").getValue(Integer.class);
                                     String userName = userSnapshot.child("name").getValue(String.class);
+                                    String userId = userSnapshot.child("id").getValue(String.class);
                                     Log.d(TAG, "User Key: " + userKey);
                                     Log.d(TAG, "User Name: " + userName);
-                                    Staff staff = new Staff(userName);
-                                    staffList.add(staff);
-                                    adapter.notifyDataSetChanged();
+                                    Log.d(TAG, "User Role: " + userRole);
+                                    if (userRole != null && userRole.equals(1)){
+                                        Staff staff = new Staff(userId, userName);
+                                        staffList.add(staff);
+                                        adapter.notifyDataSetChanged();
+                                    }
+
 
                                 }
 //                                if (!shopFound) {

@@ -1,5 +1,6 @@
 package com.example.yhourownerproject.adapter;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.yhourownerproject.R;
+import com.example.yhourownerproject.activities.StaffDetailActivity;
 import com.example.yhourownerproject.roles.Staff;
 
 import java.util.List;
@@ -38,14 +40,14 @@ public class StaffAdapter extends RecyclerView.Adapter<StaffAdapter.ViewHolder> 
         holder.staffNameTextView.setText(staff.getName());
 //        holder.startDayTextView.setText("Start Day: " + week.getStartDay());
 //        holder.endDayTextView.setText("End Day: " + week.getEndDay());
-//        holder.detailWeekButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(v.getContext(), WeekDetailActivity.class);
-//                intent.putExtra("id", week.getId());
-//                v.getContext().startActivity(intent);
-//            }
-//        });
+        holder.detailStaffButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), StaffDetailActivity.class);
+                intent.putExtra("id", staff.getId());
+                v.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
