@@ -84,7 +84,6 @@ public class StaffDetailActivity extends AppCompatActivity {
                                     if (userKey != null && userKey.equals(staffId)){
 //                                        Staff staff = new Staff(userId, userName, userDob, userAddress, userPhone, userEmail, userPosition, userSalary);
 //                                        staffList.add(staff);
-                                        Toast.makeText(StaffDetailActivity.this, "Equal", Toast.LENGTH_SHORT).show();
                                         Log.d(TAG, "User Key check: " + userKey);
                                         String userName = userSnapshot.child("name").getValue(String.class);
                                         Log.d(TAG, "User Name: " + userName);

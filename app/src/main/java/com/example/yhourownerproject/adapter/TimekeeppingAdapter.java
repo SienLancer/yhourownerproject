@@ -40,18 +40,7 @@ public class TimekeeppingAdapter extends RecyclerView.Adapter<TimekeeppingAdapte
         holder.timekeeping_name_tv.setText(timekeeping.getId());
         holder.check_in_tv.setText(timekeeping.getCheckIn());
         holder.check_out_tv.setText(timekeeping.getCheckOut());
-//        Staff staff = staffs.get(position);
-//        holder.staffNameTextView.setText(staff.getName());
-////        holder.startDayTextView.setText("Start Day: " + week.getStartDay());
-////        holder.endDayTextView.setText("End Day: " + week.getEndDay());
-//        holder.detailStaffButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(v.getContext(), StaffDetailActivity.class);
-//                intent.putExtra("id", staff.getId());
-//                v.getContext().startActivity(intent);
-//            }
-//        });
+
     }
 
     @Override
@@ -62,7 +51,6 @@ public class TimekeeppingAdapter extends RecyclerView.Adapter<TimekeeppingAdapte
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView timekeeping_name_tv, check_in_tv, check_out_tv;
 
-        Button detailTimekeepingButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -70,7 +58,6 @@ public class TimekeeppingAdapter extends RecyclerView.Adapter<TimekeeppingAdapte
             check_in_tv = itemView.findViewById(R.id.check_in_tv);
             check_out_tv = itemView.findViewById(R.id.check_out_tv);
 
-            detailTimekeepingButton = itemView.findViewById(R.id.detail_timekeeping_btn);
         }
     }
 }

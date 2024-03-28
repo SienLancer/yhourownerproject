@@ -74,13 +74,17 @@ public class TimekeepingListActivity extends AppCompatActivity {
 //                                        String timekeepingKey = userSnapshot.child("timekeeping").getKey();
 //                                        Log.d(TAG, "Timekeeping Key: " + timekeepingKey);
                                         for (DataSnapshot timekeepingSnapshot : snapshot.child(userKey).child("timekeeping").getChildren()) {
-                                            String timekeepingId = timekeepingSnapshot.getKey();
+                                            //String timekeepingId = timekeepingSnapshot.getKey();
+
                                             String checkIn = timekeepingSnapshot.child("checkIn").getValue(String.class);
                                             String checkOut = timekeepingSnapshot.child("checkOut").getValue(String.class);
-                                            Log.d(TAG, "Timekeeping ID: " + timekeepingId);
+                                            String[] parts = checkIn.split(" "); // Tách chuỗi theo dấu cách
+                                            String datePart = parts[0]; // Ghép lại phần ngày tháng năm
+                                            Log.d(TAG, "Date: " + datePart);
+
                                             Log.d(TAG, "Check In: " + checkIn);
                                             Log.d(TAG, "Check Out: " + checkOut);
-                                            timekeepingList.add(new Timekeeping(timekeepingId, checkIn, checkOut));
+                                            timekeepingList.add(new Timekeeping(datePart, checkIn, checkOut));
                                             adapter.notifyDataSetChanged();
 
 
