@@ -44,7 +44,8 @@ public class StaffDetailActivity extends AppCompatActivity {
     private String staffId;
     Dialog dialog;
     EditText ip_position_dialog_et;
-    Button view_timkeeping_btn, set_position_btn, set_position_dialog_btn, cancel_position_dialog_btn;
+    Button view_timkeeping_btn, set_position_btn, add_dialog_btn, cancel_dialog_btn,
+            set_hourly_salary_btn;
     TextView title_dialog_tv;
     private List<Staff> staffList = new ArrayList<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -56,14 +57,84 @@ public class StaffDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_staff_detail);
         view_timkeeping_btn = findViewById(R.id.view_timkeeping_btn);
         set_position_btn = findViewById(R.id.set_position_btn);
+        set_hourly_salary_btn = findViewById(R.id.set_hourly_salary_btn);
 
         dialog=new Dialog(StaffDetailActivity.this);
         dialog.setContentView(R.layout.custom_popup_dialog);
 
         title_dialog_tv = dialog.findViewById(R.id.title_dialog_tv);
         ip_position_dialog_et=dialog.findViewById(R.id.ip_dialog_et);
-        set_position_dialog_btn =dialog.findViewById(R.id.add_dialog_btn);
-        cancel_position_dialog_btn =dialog.findViewById(R.id.cancel_dialog_btn);
+        add_dialog_btn =dialog.findViewById(R.id.add_dialog_btn);
+        cancel_dialog_btn =dialog.findViewById(R.id.cancel_dialog_btn);
+
+        set_hourly_salary_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+                title_dialog_tv.setText("Set Hourly Salary");
+
+                add_dialog_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Lấy giá trị từ EditText
+                        String inputText = ip_position_dialog_et.getText().toString();
+
+                        // Kiểm tra xem liệu inputText có phải là số nguyên hay không
+                        try {
+                            int newHourlySalary = Integer.parseInt(inputText);
+
+                            // Nếu giá trị nhập vào là số nguyên, tiếp tục xử lý
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            String userId = user.getUid();
+                            if (user != null) {
+                                firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                                        Log.d(TAG, "Owner Shop ID: " + ownerShopId);
+                                        if (ownerShopId != null) {
+                                            // Lấy reference đến vị trí của người dùng để cập nhật dữ liệu
+                                            DatabaseReference userReference = firebaseDatabase.getReference("User").child(staffId);
+                                            userReference.child("hourlySalary").setValue(newHourlySalary).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(StaffDetailActivity.this, "Hourly salary updated successfully", Toast.LENGTH_SHORT).show();
+                                                    } else {
+                                                        Toast.makeText(StaffDetailActivity.this, "Failed to update hourly salary", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
+
+                                            // Cập nhật dữ liệu xong, bạn có thể đóng dialog hoặc thực hiện các hành động khác ở đây
+                                            dialog.dismiss();
+                                        } else {
+                                            Toast.makeText(StaffDetailActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(StaffDetailActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (NumberFormatException e) {
+                            // Nếu inputText không phải là số nguyên, hiển thị thông báo lỗi
+                            Toast.makeText(StaffDetailActivity.this, "Please enter a valid integer value", Toast.LENGTH_SHORT).show();
+                            // Xóa nội dung của EditText để yêu cầu nhập lại
+                            ip_position_dialog_et.setText("");
+                            // Focus vào EditText để người dùng nhập lại
+                            ip_position_dialog_et.requestFocus();
+                        }
+                    }
+                });
+
+
+            }
+        });
 
         set_position_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +142,7 @@ public class StaffDetailActivity extends AppCompatActivity {
                 dialog.show();
                 title_dialog_tv.setText("Set Position");
 
-                set_position_dialog_btn.setOnClickListener(new View.OnClickListener() {
+                add_dialog_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         FirebaseUser user = mAuth.getCurrentUser();
@@ -118,7 +189,7 @@ public class StaffDetailActivity extends AppCompatActivity {
             }
         });
 
-        cancel_position_dialog_btn.setOnClickListener(new View.OnClickListener() {
+        cancel_dialog_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
