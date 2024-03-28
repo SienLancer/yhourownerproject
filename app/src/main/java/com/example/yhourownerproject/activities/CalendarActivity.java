@@ -3,7 +3,6 @@ package com.example.yhourownerproject.activities;
 import android.app.Dialog;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,12 +13,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.yhourownerproject.R;
-import com.example.yhourownerproject.roles.Week;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -60,9 +55,9 @@ public class CalendarActivity extends AppCompatActivity {
 
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        ip_shift_et=dialog.findViewById(R.id.ip_shift_et);
-        add_shift_btn =dialog.findViewById(R.id.add_shift_btn);
-        cancel_btn =dialog.findViewById(R.id.cancel_btn);
+        ip_shift_et=dialog.findViewById(R.id.ip_dialog_et);
+        add_shift_btn =dialog.findViewById(R.id.add_dialog_btn);
+        cancel_btn =dialog.findViewById(R.id.cancel_dialog_btn);
         getDataTable();
         itemClick();
 

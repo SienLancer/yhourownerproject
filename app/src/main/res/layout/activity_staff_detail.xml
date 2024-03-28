@@ -164,10 +164,17 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/view_timkeeping_tv"
+        android:id="@+id/view_timkeeping_btn"
         android:layout_width="match_parent"
         android:layout_marginTop="30dp"
         android:layout_height="wrap_content"
         android:text="Timekeeping List" />
+
+    <Button
+        android:id="@+id/set_position_btn"
+        android:layout_width="match_parent"
+        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content"
+        android:text="Set Position" />
 
 </LinearLayout>
