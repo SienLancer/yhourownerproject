@@ -62,10 +62,10 @@ public class WeekAdapter extends RecyclerView.Adapter<WeekAdapter.ViewHolder> {
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            weekNameTextView = itemView.findViewById(R.id.staff_name_tv);
+            weekNameTextView = itemView.findViewById(R.id.week_name_tv);
             startDayTextView = itemView.findViewById(R.id.start_day_tv);
             endDayTextView = itemView.findViewById(R.id.end_day_tv);
-            detailWeekButton = itemView.findViewById(R.id.detail_staff_btn);
+            detailWeekButton = itemView.findViewById(R.id.detail_week_btn);
         }
     }
 }

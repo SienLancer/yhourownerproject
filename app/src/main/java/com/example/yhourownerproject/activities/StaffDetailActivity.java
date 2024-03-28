@@ -2,8 +2,11 @@ package com.example.yhourownerproject.activities;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +37,7 @@ public class StaffDetailActivity extends AppCompatActivity {
     private TextView data_staff_name_tv, data_staff_dob_tv, data_staff_address_tv, data_staff_phone_tv,
             data_staff_email_tv, data_staff_position_tv, data_staff_hourly_salary_tv;
     private String staffId;
+    Button view_timkeeping_tv;
     private List<Staff> staffList = new ArrayList<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -42,6 +46,15 @@ public class StaffDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_staff_detail);
+        view_timkeeping_tv = findViewById(R.id.view_timkeeping_tv);
+        view_timkeeping_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StaffDetailActivity.this, TimekeepingListActivity.class);
+                intent.putExtra("id", staffId);
+                startActivity(intent);
+            }
+        });
 
         init();
 
