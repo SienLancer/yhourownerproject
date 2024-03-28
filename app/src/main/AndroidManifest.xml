@@ -13,6 +13,9 @@
         android:theme="@style/Theme.YhourOwnerProject"
         tools:targetApi="31">
         <activity
+            android:name=".activities.SalaryListActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.TimekeepingListActivity"
             android:exported="false" />
         <activity

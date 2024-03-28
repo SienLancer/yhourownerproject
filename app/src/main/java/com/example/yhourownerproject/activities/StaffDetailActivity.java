@@ -45,7 +45,7 @@ public class StaffDetailActivity extends AppCompatActivity {
     Dialog dialog;
     EditText ip_position_dialog_et;
     Button view_timkeeping_btn, set_position_btn, add_dialog_btn, cancel_dialog_btn,
-            set_hourly_salary_btn;
+            set_hourly_salary_btn, salary_list_btn;
     TextView title_dialog_tv;
     private List<Staff> staffList = new ArrayList<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -58,6 +58,7 @@ public class StaffDetailActivity extends AppCompatActivity {
         view_timkeeping_btn = findViewById(R.id.view_timkeeping_btn);
         set_position_btn = findViewById(R.id.set_position_btn);
         set_hourly_salary_btn = findViewById(R.id.set_hourly_salary_btn);
+        salary_list_btn = findViewById(R.id.salary_list_btn);
 
         dialog=new Dialog(StaffDetailActivity.this);
         dialog.setContentView(R.layout.custom_popup_dialog);
@@ -66,6 +67,15 @@ public class StaffDetailActivity extends AppCompatActivity {
         ip_position_dialog_et=dialog.findViewById(R.id.ip_dialog_et);
         add_dialog_btn =dialog.findViewById(R.id.add_dialog_btn);
         cancel_dialog_btn =dialog.findViewById(R.id.cancel_dialog_btn);
+
+        salary_list_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StaffDetailActivity.this, SalaryListActivity.class);
+                intent.putExtra("id", staffId);
+                startActivity(intent);
+            }
+        });
 
         set_hourly_salary_btn.setOnClickListener(new View.OnClickListener() {
             @Override
