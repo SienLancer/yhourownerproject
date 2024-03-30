@@ -66,14 +66,12 @@ public class SalaryListActivity extends AppCompatActivity {
                         firebaseDatabase.getReference("User").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                boolean shopFound = false;
                                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                                     String userKey = userSnapshot.getKey();
 
 
                                     if (userKey != null && userKey.equals(salaryId)){
-//                                        String timekeepingKey = userSnapshot.child("timekeeping").getKey();
-//                                        Log.d(TAG, "Timekeeping Key: " + timekeepingKey);
+
                                         for (DataSnapshot timekeepingSnapshot : snapshot.child(userKey).child("salary").getChildren()) {
                                             String salaryKey = timekeepingSnapshot.getKey();
 
@@ -83,9 +81,6 @@ public class SalaryListActivity extends AppCompatActivity {
                                             String status = timekeepingSnapshot.child("status").getValue(String.class);
                                             String payDay = timekeepingSnapshot.child("payDay").getValue(String.class);
 
-//                                            String[] parts = checkIn.split(" "); // Tách chuỗi theo dấu cách
-//                                            String datePart = parts[0]; // Ghép lại phần ngày tháng năm
-//                                            Log.d(TAG, "Date: " + datePart);
                                             Log.d(TAG, "Salary Key: " + salaryKey);
                                             Log.d(TAG, "Start Date: " + startDate);
                                             Log.d(TAG, "Status: " + status);
