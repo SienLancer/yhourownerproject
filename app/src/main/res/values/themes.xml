@@ -6,4 +6,7 @@
     </style>
 
     <style name="Theme.YhourOwnerProject" parent="Base.Theme.YhourOwnerProject" />
+    <style name="RotateAnimation">
+        <item name="android:windowEnterAnimation">@anim/rotate_animation</item>
+    </style>
 </resources>

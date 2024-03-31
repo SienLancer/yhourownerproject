@@ -1,7 +1,10 @@
 package com.example.yhourownerproject.fragments;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +16,8 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,6 +49,9 @@ public class OwnerHomeFragment extends Fragment {
     private View mView;
     TextView today;
     ImageView qrcode_imgView;
+    ImageView loading_imgv;
+    AlertDialog loadDialog;
+    Animation animation;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public OwnerHomeFragment() {
@@ -70,17 +78,18 @@ public class OwnerHomeFragment extends Fragment {
         today = mView.findViewById(R.id.today);
         qrcode_imgView = mView.findViewById(R.id.qrcode_imgView);
 
+        loadDialog();
+        realtimeQrcode();
 
-
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                realtimeQrcode();
-                handler.postDelayed(this, 1000);
-            }
-        };
-        handler.postDelayed(runnable, 1000);
+//        Handler handler = new Handler();
+//        Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                realtimeQrcode();
+//                handler.postDelayed(this, 1000);
+//            }
+//        };
+//        handler.postDelayed(runnable, 1000);
 
 
 
@@ -92,9 +101,23 @@ public class OwnerHomeFragment extends Fragment {
         return mView;
     }
 
+    public void loadDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false); // Tùy chỉnh tùy theo nhu cầu của bạn
+        View view = getLayoutInflater().inflate(R.layout.custom_loading_dialog, null);
+        loading_imgv = view.findViewById(R.id.loading_imgv);
 
+        builder.setView(view);
+        loadDialog = builder.create();
+        //dialog.getWindow().setWindowAnimations(R.style.RotateAnimation);
+        loadDialog.getWindow().setLayout(130, 130);
+        loadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        animation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_animation);
+        loading_imgv.startAnimation(animation);
+    }
 
     public void realtimeQrcode(){
+        loadDialog.show();
         FirebaseUser user = mAuth.getCurrentUser();
         String userId = user.getUid();
         if (user != null) {
@@ -104,7 +127,7 @@ public class OwnerHomeFragment extends Fragment {
                     String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
                     if(ownerShopId != null){
                         firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("QRCode").child("codeScan")
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                .addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         String realtimeqr = snapshot.getValue(String.class);
@@ -115,6 +138,7 @@ public class OwnerHomeFragment extends Fragment {
                                             Bitmap bitmap = barcodeEncoder.createBitmap(matrix);
 
                                             qrcode_imgView.setImageBitmap(bitmap);
+                                            loadDialog.dismiss();
 
                                         }catch (Exception e){
                                             throw new RuntimeException(e);
