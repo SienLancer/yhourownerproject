@@ -50,14 +50,6 @@ public class CalendarActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         init();
 
-        dialog=new Dialog(CalendarActivity.this);
-        dialog.setContentView(R.layout.custom_popup_dialog);
-
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        ip_shift_et=dialog.findViewById(R.id.ip_dialog_et);
-        add_shift_btn =dialog.findViewById(R.id.add_dialog_btn);
-        cancel_btn =dialog.findViewById(R.id.cancel_dialog_btn);
         getDataTable();
         itemClick();
 

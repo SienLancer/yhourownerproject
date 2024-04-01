@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -60,13 +62,14 @@ public class StaffDetailActivity extends AppCompatActivity {
         set_hourly_salary_btn = findViewById(R.id.set_hourly_salary_btn);
         salary_list_btn = findViewById(R.id.salary_list_btn);
 
+
         dialog=new Dialog(StaffDetailActivity.this);
         dialog.setContentView(R.layout.custom_popup_dialog);
-
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         title_dialog_tv = dialog.findViewById(R.id.title_dialog_tv);
-        ip_position_dialog_et=dialog.findViewById(R.id.ip_dialog_et);
-        add_dialog_btn =dialog.findViewById(R.id.add_dialog_btn);
-        cancel_dialog_btn =dialog.findViewById(R.id.cancel_dialog_btn);
+        ip_position_dialog_et=dialog.findViewById(R.id.ip_shift_et);
+        add_dialog_btn =dialog.findViewById(R.id.add_shift_btn);
+        cancel_dialog_btn =dialog.findViewById(R.id.cancel_btn);
 
         salary_list_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,7 +234,7 @@ public class StaffDetailActivity extends AppCompatActivity {
                     String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
                     Log.d(TAG, "Owner Shop ID: " + ownerShopId);
                     if (ownerShopId != null) {
-                        firebaseDatabase.getReference("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                        firebaseDatabase.getReference("User").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                                boolean shopFound = false;

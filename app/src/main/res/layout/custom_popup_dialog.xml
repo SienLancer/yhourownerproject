@@ -5,7 +5,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="#774BBC"
+    android:padding="10dp"
+    android:layout_marginHorizontal="30dp"
+    android:background="@drawable/item_week_view_bg"
     >
 
 
@@ -14,17 +16,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Enter a name to select a shift"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@color/white"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/ip_dialog_et"
+        android:id="@+id/ip_shift_et"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-
-
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,21 +41,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ip_dialog_et">
+        app:layout_constraintTop_toBottomOf="@+id/ip_shift_et">
 
         <Button
-            android:id="@+id/cancel_dialog_btn"
+            android:id="@+id/cancel_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
             android:layout_weight="1"
-
             android:text="Cancel"
 
             />
 
         <Button
-            android:id="@+id/add_dialog_btn"
+            android:id="@+id/add_shift_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
