@@ -1906,17 +1906,9 @@
                 android:layout_height="wrap_content"
                 android:text="View" />
 
-            <Button
-                android:id="@+id/new_calendar_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="New" />
 
-            <Button
-                android:id="@+id/list_calendar_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="List" />
+
+
         </LinearLayout>
 
     </ViewFlipper>
@@ -1929,9 +1921,29 @@
         android:clickable="true"
         android:text="List"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintEnd_toStartOf="@+id/list_calendar_btn"
+        app:layout_constraintStart_toEndOf="@+id/new_calendar_btn" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/new_calendar_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginBottom="100dp"
+        android:clickable="true"
+        android:src="@drawable/add_new_ic"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/list_calendar_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="100dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

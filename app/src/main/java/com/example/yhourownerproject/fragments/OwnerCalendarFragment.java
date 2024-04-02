@@ -40,7 +40,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class OwnerCalendarFragment extends Fragment {
     private View mView;
-    Button view_calendar_btn, new_calendar_btn, list_calendar_btn, button_yes, button_no;
+    Button view_calendar_btn, button_yes, button_no;
+    FloatingActionButton new_calendar_btn, list_calendar_btn;
     ViewFlipper viewFlipper;
     TextView start_end_date_tv;
     Button view_timetable_btn, list_timetable_btn;
