@@ -31,8 +31,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class NewCalendarActivity extends AppCompatActivity {
@@ -144,6 +147,16 @@ public class NewCalendarActivity extends AppCompatActivity {
                                     Log.d(TAG, "Week Name: " + weekName);
                                     String startDay = start_day_tv.getText().toString();
                                     String endDay = end_day_tv.getText().toString();
+                                    SimpleDateFormat targetFormat = new SimpleDateFormat("dd/MM/yyyy");
+                                    try {
+                                        Date startDate = targetFormat.parse(startDay);
+                                        Date endDate = targetFormat.parse(endDay);
+                                        startDay = targetFormat.format(startDate);
+                                        endDay = targetFormat.format(endDate);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     for (String weekKey : weekKeys) {
                                         if (weekName.equalsIgnoreCase(weekKey)) {
                                             weekExists = true;
@@ -158,8 +171,8 @@ public class NewCalendarActivity extends AppCompatActivity {
                                         // Thực hiện các hành động cần thiết khi thêm tuần mới vào lịch của cửa
                                         Week week = new Week(timestamp+weekName,"", "", "", "", "", "", "", "", "",
                                               "", "", "", "", "", "", "", "", "", "", "",
-                                               "", "", "", "", "", "",
-                                                "", startDay, endDay);
+                                               "", "6:00", "12:00", "12:00", "17:00", "17:00",
+                                                "22:00", startDay, endDay, "Opening");
                                         String weekNameTimestamp = timestamp+ weekName;
                                         firebaseDatabase.getReference().child("Shop").child(shopKey).child("Calendar").child(weekNameTimestamp).setValue(week).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override

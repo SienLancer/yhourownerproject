@@ -31,6 +31,7 @@ public class Week {
     String eveningSend;
     String startDay;
     String endDay;
+    String status;
 
 
     public Week(String id, String startDay, String endDay){
@@ -39,7 +40,7 @@ public class Week {
         this.endDay = endDay;
     }
 
-    public Week(String id, String mon1, String mon2, String mon3, String tue1, String tue2, String tue3, String wed1, String wed2, String wed3, String thu1, String thu2, String thu3, String fri1, String fri2, String fri3, String sat1, String sat2, String sat3, String sun1, String sun2, String sun3, String morningSStart, String morningSend, String afternoonSStart, String afternoonSend, String eveningSStart, String eveningSend, String startDay, String endDay) {
+    public Week(String id, String mon1, String mon2, String mon3, String tue1, String tue2, String tue3, String wed1, String wed2, String wed3, String thu1, String thu2, String thu3, String fri1, String fri2, String fri3, String sat1, String sat2, String sat3, String sun1, String sun2, String sun3, String morningSStart, String morningSend, String afternoonSStart, String afternoonSend, String eveningSStart, String eveningSend, String startDay, String endDay, String status) {
         this.id = id;
         this.mon1 = mon1;
         this.mon2 = mon2;
@@ -70,6 +71,15 @@ public class Week {
         this.eveningSend = eveningSend;
         this.startDay = startDay;
         this.endDay = endDay;
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getId() {
