@@ -2,11 +2,13 @@ package com.example.yhourownerproject.fragments;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -26,6 +28,7 @@ import com.example.yhourownerproject.activities.NewCalendarActivity;
 import com.example.yhourownerproject.activities.WeekListActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,13 +40,14 @@ import com.google.firebase.database.ValueEventListener;
 
 public class OwnerCalendarFragment extends Fragment {
     private View mView;
-    Button view_calendar_btn, new_calendar_btn, list_calendar_btn;
+    Button view_calendar_btn, new_calendar_btn, list_calendar_btn, button_yes, button_no;
     ViewFlipper viewFlipper;
     TextView start_end_date_tv;
     Button view_timetable_btn, list_timetable_btn;
     EditText ip_shift_et;
     Button add_shift_btn,cancel_btn;
-    Dialog dialog;
+    Dialog dialog, yesNoDialog;
+    FloatingActionButton stastus_table_fabtn;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     ValueEventListener listener;
@@ -60,7 +64,8 @@ public class OwnerCalendarFragment extends Fragment {
             morningSstart_thu, morningSend_thu, afternoonSstart_thu, afternoonSend_thu, eveningSstart_thu, eveningSend_thu,
             morningSstart_fri, morningSend_fri, afternoonSstart_fri, afternoonSend_fri, eveningSstart_fri, eveningSend_fri,
             morningSstart_sat, morningSend_sat, afternoonSstart_sat, afternoonSend_sat, eveningSstart_sat, eveningSend_sat,
-            morningSstart_sun, morningSend_sun, afternoonSstart_sun, afternoonSend_sun, eveningSstart_sun, eveningSend_sun;
+            morningSstart_sun, morningSend_sun, afternoonSstart_sun, afternoonSend_sun, eveningSstart_sun, eveningSend_sun,
+            dialog_title, dialog_message;
 
 
     public OwnerCalendarFragment() {
@@ -89,6 +94,7 @@ public class OwnerCalendarFragment extends Fragment {
         init();
 
         getDataTable();
+        checkStatusButton();
         itemClick();
         viewFlipper.setOnTouchListener(new View.OnTouchListener() {
             private float startX;
@@ -121,6 +127,103 @@ public class OwnerCalendarFragment extends Fragment {
 
         });
 
+        stastus_table_fabtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                yesNoDialog.show();
+            }
+        });
+
+        button_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null) {
+                    String userId = user.getUid();
+                    DatabaseReference userRef = firebaseDatabase.getReference().child("User").child(userId).child("shopID");
+                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String ownerShopId = snapshot.getValue(String.class);
+                            if (ownerShopId != null) {
+                                DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar");
+
+                                shopRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                        // Lấy tất cả các tuần
+                                        Iterable<DataSnapshot> weeks = dataSnapshot.getChildren();
+                                        DataSnapshot lastWeekSnapshot = null;
+
+                                        // Lặp qua tất cả các tuần và lưu lại tuần cuối cùng
+                                        for (DataSnapshot weekSnapshot : weeks) {
+                                            lastWeekSnapshot = weekSnapshot;
+                                        }
+
+                                        if (lastWeekSnapshot != null) {
+                                            // Cập nhật dữ liệu của Sun3 trong tuần cuối cùng
+                                            DatabaseReference statusRef = lastWeekSnapshot.child("status").getRef();
+                                            String statusTable = lastWeekSnapshot.child("status").getValue(String.class);
+
+                                            if (statusTable != null && statusTable.equals("Opening")){
+                                                dialog_title.setText("Change of status");
+                                                dialog_message.setText("Are you sure you want to close the timetable?");
+                                                statusRef.setValue("Closed").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
+                                                            yesNoDialog.dismiss();
+                                                            Toast.makeText(getContext(), "Timetable is closed", Toast.LENGTH_SHORT).show();
+                                                        } else {
+                                                            yesNoDialog.dismiss();
+                                                            Toast.makeText(getContext(), "Failed to add data", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+                                                });
+                                            }else if(statusTable != null && statusTable.equals("Closed")){
+                                                dialog_title.setText("Change of status");
+                                                dialog_message.setText("Are you sure you want to open the timetable?");
+                                                statusRef.setValue("Opening").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
+                                                            yesNoDialog.dismiss();
+                                                            Toast.makeText(getContext(), "The timetable is opening", Toast.LENGTH_SHORT).show();
+                                                        } else {
+                                                            yesNoDialog.dismiss();
+                                                            Toast.makeText(getContext(), "Failed to add data", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    }
+                                                });
+                                            }
+
+                                        } else {
+                                            Toast.makeText(getContext(), "No weeks found", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(getContext(), "Shop ID not found for this user", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         view_calendar_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,6 +250,72 @@ public class OwnerCalendarFragment extends Fragment {
         });
 
         return mView;
+    }
+
+    public void checkStatusButton(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        int colorOpening = ContextCompat.getColor(getContext(), R.color.green);
+        int colorClosed = ContextCompat.getColor(getContext(), R.color.red);
+        if (user != null) {
+            String userId = user.getUid();
+            DatabaseReference userRef = firebaseDatabase.getReference().child("User").child(userId).child("shopID");
+            userRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String ownerShopId = snapshot.getValue(String.class);
+                    if (ownerShopId != null) {
+                        DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar");
+
+                        shopRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                // Lấy tất cả các tuần
+                                Iterable<DataSnapshot> weeks = dataSnapshot.getChildren();
+                                DataSnapshot lastWeekSnapshot = null;
+
+                                // Lặp qua tất cả các tuần và lưu lại tuần cuối cùng
+                                for (DataSnapshot weekSnapshot : weeks) {
+                                    lastWeekSnapshot = weekSnapshot;
+                                }
+
+                                if (lastWeekSnapshot != null) {
+                                    // Cập nhật dữ liệu của Sun3 trong tuần cuối cùng
+                                    String statusTable = lastWeekSnapshot.child("status").getValue(String.class);
+
+                                    if (statusTable != null && statusTable.equals("Opening")){
+                                        dialog_title.setText("Change of status");
+                                        dialog_message.setText("Are you sure you want to close the timetable?");
+                                        stastus_table_fabtn.setBackgroundTintList(ColorStateList.valueOf(colorOpening));
+                                    }else if(statusTable != null && statusTable.equals("Closed")){
+                                        dialog_title.setText("Change of status");
+                                        dialog_message.setText("Are you sure you want to open the timetable?");
+                                        stastus_table_fabtn.setBackgroundTintList(ColorStateList.valueOf(colorClosed));
+                                    }
+
+                                } else {
+                                    Toast.makeText(getContext(), "No weeks found", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(getContext(), "Shop ID not found for this user", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -269,8 +438,11 @@ public class OwnerCalendarFragment extends Fragment {
         }
     }
 
+
+
     public void init(){
         view_calendar_btn = mView.findViewById(R.id.view_calendar_btn);
+        stastus_table_fabtn = mView.findViewById(R.id.stastus_table_fabtn);
         new_calendar_btn = mView.findViewById(R.id.new_calendar_btn);
         list_calendar_btn = mView.findViewById(R.id.list_calendar_btn);
         viewFlipper = mView.findViewById(R.id.view_flipper);
@@ -361,6 +533,15 @@ public class OwnerCalendarFragment extends Fragment {
         ip_shift_et=dialog.findViewById(R.id.ip_shift_et);
         add_shift_btn =dialog.findViewById(R.id.add_shift_btn);
         cancel_btn =dialog.findViewById(R.id.cancel_btn);
+
+        yesNoDialog=new Dialog(getContext());
+        yesNoDialog.setContentView(R.layout.custom_yes_no_dialog);
+        yesNoDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        button_yes = yesNoDialog.findViewById(R.id.button_yes);
+        button_no = yesNoDialog.findViewById(R.id.button_no);
+        dialog_title = yesNoDialog.findViewById(R.id.dialog_title);
+        dialog_message = yesNoDialog.findViewById(R.id.dialog_message);
 
 
     }
