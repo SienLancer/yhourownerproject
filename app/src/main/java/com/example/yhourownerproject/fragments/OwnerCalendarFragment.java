@@ -134,6 +134,13 @@ public class OwnerCalendarFragment extends Fragment {
             }
         });
 
+        button_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                yesNoDialog.dismiss();
+            }
+        });
+
         button_yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
