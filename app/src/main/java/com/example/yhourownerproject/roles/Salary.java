@@ -1,11 +1,15 @@
 package com.example.yhourownerproject.roles;
 
+import java.util.HashMap;
+
 public class Salary {
     private String id;
     private Integer currentSalary;
     private String status;
     private String startDate;
     private String payDay;
+
+
 
     public Salary(String id, Integer currentSalary, String status, String startDate, String payDay) {
         this.id = id;

@@ -13,9 +13,8 @@ public class Staff {
     private Integer hourlySalary;
     private Integer role;
     private String shopID;
-    private String userNameS;
-    private String passwordS;
-    private Timekeeping timekeeping;
+    private String password;
+
 
     public Staff(){
 
@@ -25,7 +24,7 @@ public class Staff {
         this.name = name;
     }
 
-    public Staff(String id, String name, String dateOfBirth, String address, Integer phoneNumber, String email, String position, Integer hourlySalary, Integer role, String shopID, String userNameS, String passwordS, Timekeeping timekeeping) {
+    public Staff(String id, String name, String dateOfBirth, String address, Integer phoneNumber, String email, String position, Integer hourlySalary, Integer role, String shopID, String password) {
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -36,17 +35,7 @@ public class Staff {
         this.hourlySalary = hourlySalary;
         this.role = role;
         this.shopID = shopID;
-        this.userNameS = userNameS;
-        this.passwordS = passwordS;
-        this.timekeeping = timekeeping;
-    }
-
-    public Timekeeping getTimekeeping() {
-        return timekeeping;
-    }
-
-    public void setTimekeeping(Timekeeping timekeeping) {
-        this.timekeeping = timekeeping;
+        this.password = password;
     }
 
     public String getId() {
@@ -129,19 +118,11 @@ public class Staff {
         this.shopID = shopID;
     }
 
-    public String getUserNameS() {
-        return userNameS;
+    public String getPassword() {
+        return password;
     }
 
-    public void setUserNameS(String userNameS) {
-        this.userNameS = userNameS;
-    }
-
-    public String getPasswordS() {
-        return passwordS;
-    }
-
-    public void setPasswordS(String passwordS) {
-        this.passwordS = passwordS;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
