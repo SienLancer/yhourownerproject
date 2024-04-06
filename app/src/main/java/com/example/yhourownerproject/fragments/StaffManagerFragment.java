@@ -2,6 +2,7 @@ package com.example.yhourownerproject.fragments;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,8 +17,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.yhourownerproject.R;
+import com.example.yhourownerproject.activities.SignUpForStaffActivity;
 import com.example.yhourownerproject.adapter.StaffAdapter;
 import com.example.yhourownerproject.roles.Staff;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,6 +34,8 @@ import java.util.List;
 
 public class StaffManagerFragment extends Fragment {
     private View mView;
+
+    FloatingActionButton create_staff_btn;
 
     private RecyclerView recyclerView;
     private StaffAdapter adapter;
@@ -60,10 +65,19 @@ public class StaffManagerFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_staff_manager, container, false);
+        create_staff_btn = mView.findViewById(R.id.create_staff_btn);
         recyclerView = mView.findViewById(R.id.recycler_view_staff_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new StaffAdapter(staffList);
         recyclerView.setAdapter(adapter);
+
+        create_staff_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), SignUpForStaffActivity.class);
+                startActivity(intent);
+            }
+        });
 
         loadDataFromFirebase();
 

@@ -7,13 +7,15 @@ public class Staff {
     private String name;
     private String dateOfBirth;
     private String address;
-    private String phoneNumber;
+    private Integer phoneNumber;
     private String email;
     private String position;
-    private String hourlySalary;
-    private List<String> timekeeping;
+    private Integer hourlySalary;
+    private Integer role;
+    private String shopID;
     private String userNameS;
     private String passwordS;
+    private Timekeeping timekeeping;
 
     public Staff(){
 
@@ -23,8 +25,7 @@ public class Staff {
         this.name = name;
     }
 
-    public Staff(String id, String name, String dateOfBirth, String address, String phoneNumber, String email,
-                 String position, String hourlySalary) {
+    public Staff(String id, String name, String dateOfBirth, String address, Integer phoneNumber, String email, String position, Integer hourlySalary, Integer role, String shopID, String userNameS, String passwordS, Timekeeping timekeeping) {
         this.id = id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
@@ -33,14 +34,19 @@ public class Staff {
         this.email = email;
         this.position = position;
         this.hourlySalary = hourlySalary;
+        this.role = role;
+        this.shopID = shopID;
+        this.userNameS = userNameS;
+        this.passwordS = passwordS;
+        this.timekeeping = timekeeping;
     }
 
-    public String getPosition() {
-        return position;
+    public Timekeeping getTimekeeping() {
+        return timekeeping;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setTimekeeping(Timekeeping timekeeping) {
+        this.timekeeping = timekeeping;
     }
 
     public String getId() {
@@ -75,11 +81,11 @@ public class Staff {
         this.address = address;
     }
 
-    public String getPhoneNumber() {
+    public Integer getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(Integer phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -91,20 +97,36 @@ public class Staff {
         this.email = email;
     }
 
-    public String getHourlySalary() {
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public Integer getHourlySalary() {
         return hourlySalary;
     }
 
-    public void setHourlySalary(String hourlySalary) {
+    public void setHourlySalary(Integer hourlySalary) {
         this.hourlySalary = hourlySalary;
     }
 
-    public List<String> getTimekeeping() {
-        return timekeeping;
+    public Integer getRole() {
+        return role;
     }
 
-    public void setTimekeeping(List<String> timekeeping) {
-        this.timekeeping = timekeeping;
+    public void setRole(Integer role) {
+        this.role = role;
+    }
+
+    public String getShopID() {
+        return shopID;
+    }
+
+    public void setShopID(String shopID) {
+        this.shopID = shopID;
     }
 
     public String getUserNameS() {
