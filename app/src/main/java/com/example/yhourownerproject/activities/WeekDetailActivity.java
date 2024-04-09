@@ -41,7 +41,6 @@ public class WeekDetailActivity extends AppCompatActivity {
     String weekId;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    ValueEventListener listener;
     TextView Sun1,Sun2,Sun3,
             Mon1,Mon2,Mon3,
             Tue1,Tue2,Tue3,

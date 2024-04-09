@@ -267,7 +267,7 @@ public class StaffDetailActivity extends AppCompatActivity {
                                                     String userName = userSnapshot.child("name").getValue(String.class);
                                                     String userDob = userSnapshot.child("dateOfBirth").getValue(String.class);
                                                     String userAddress = userSnapshot.child("address").getValue(String.class);
-                                                    String userPhone = userSnapshot.child("phoneNumber").getValue(String.class);
+                                                    Integer userPhone = userSnapshot.child("phoneNumber").getValue(Integer.class);
                                                     String userEmail = userSnapshot.child("email").getValue(String.class);
                                                     String userPosition = userSnapshot.child("position").getValue(String.class);
                                                     Integer userSalary = userSnapshot.child("hourlySalary").getValue(Integer.class);
@@ -275,10 +275,10 @@ public class StaffDetailActivity extends AppCompatActivity {
                                                     data_staff_name_tv.setText(userName);
                                                     data_staff_dob_tv.setText(userDob);
                                                     data_staff_address_tv.setText(userAddress);
-                                                    data_staff_phone_tv.setText(userPhone);
+                                                    data_staff_phone_tv.setText(String.valueOf(userPhone));
                                                     data_staff_email_tv.setText(userEmail);
                                                     data_staff_position_tv.setText(userPosition);
-                                                    data_staff_hourly_salary_tv.setText(userSalary+"");
+                                                    data_staff_hourly_salary_tv.setText(String.valueOf(userSalary));
 
                                                     return;
                                                 }
