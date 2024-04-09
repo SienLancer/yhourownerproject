@@ -1,10 +1,18 @@
 package com.example.yhourownerproject.activities;
 
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -26,6 +34,9 @@ import com.google.firebase.database.FirebaseDatabase;
 public class NewShopActivity extends AppCompatActivity {
     EditText shop_new_name_edt, shop_new_address_edt, shop_new_phone_edt;
     Button shop_new_btn;
+    ImageView loading_imgv;
+    AlertDialog loadDialog;
+    Animation animation;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -39,6 +50,7 @@ public class NewShopActivity extends AppCompatActivity {
         shop_new_phone_edt = findViewById(R.id.shop_new_phone_edt);
         shop_new_btn = findViewById(R.id.create_shop_btn);
 
+        loadDialog();
         shop_new_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,8 +62,41 @@ public class NewShopActivity extends AppCompatActivity {
 
     }
 
+    private void showCustomToast(String message) {
+        // Inflate layout cho Toast
+        View layout = getLayoutInflater().inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_container));
+
+        // Thiết lập nội dung của Toast
+        TextView textView = layout.findViewById(R.id.custom_toast_text);
+        textView.setText(message);
+
+        // Tạo một Toast và đặt layout của nó
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+    }
+
+
+
+    public void loadDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(NewShopActivity.this);
+        builder.setCancelable(false); // Tùy chỉnh tùy theo nhu cầu của bạn
+        View view = getLayoutInflater().inflate(R.layout.custom_loading_dialog, null);
+        loading_imgv = view.findViewById(R.id.loading_imgv);
+
+        builder.setView(view);
+        loadDialog = builder.create();
+        //dialog.getWindow().setWindowAnimations(R.style.RotateAnimation);
+        loadDialog.getWindow().setLayout(130, 130);
+        loadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        animation = AnimationUtils.loadAnimation(NewShopActivity.this, R.anim.rotate_animation);
+        loading_imgv.startAnimation(animation);
+    }
+
     public void addNewShop() {
         try {
+            loadDialog.show();
             FirebaseUser user = mAuth.getCurrentUser();
 
             if (user != null) {
@@ -88,18 +133,22 @@ public class NewShopActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     // Thêm child QRCode với codeScan là "new"
                                     shopRef.child("QRCode").child("codeScan").setValue("new");
-                                    Toast.makeText(NewShopActivity.this, "New shop added successfully", Toast.LENGTH_SHORT).show();
+                                    firebaseDatabase.getReference().child("User").child(userId).child("shopID").setValue(shopRef.getKey());
+                                    showCustomToast("New shop added successfully");
+                                    loadDialog.dismiss();
+                                    Intent intent = new Intent(NewShopActivity.this, BottomTabActivity.class);
+                                    startActivity(intent);
                                 } else {
-                                    Toast.makeText(NewShopActivity.this, "Error adding new shop", Toast.LENGTH_SHORT).show();
+                                    showCustomToast("Error adding new shop");
                                 }
                             }
                         });
             } else {
-                Toast.makeText(NewShopActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+                showCustomToast("User not found");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(NewShopActivity.this, "An error occurred", Toast.LENGTH_SHORT).show();
+            showCustomToast("An error occurred");
         }
     }
 

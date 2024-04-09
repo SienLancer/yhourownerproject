@@ -74,6 +74,21 @@ public class SignInForOwnerActivity extends AppCompatActivity {
         });
     }
 
+    private void showCustomToast(String message) {
+        // Inflate layout cho Toast
+        View layout = getLayoutInflater().inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_container));
+
+        // Thiết lập nội dung của Toast
+        TextView textView = layout.findViewById(R.id.custom_toast_text);
+        textView.setText(message);
+
+        // Tạo một Toast và đặt layout của nó
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+    }
+
     public void loadDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(SignInForOwnerActivity.this);
         builder.setCancelable(false); // Tùy chỉnh tùy theo nhu cầu của bạn
@@ -118,9 +133,9 @@ public class SignInForOwnerActivity extends AppCompatActivity {
 
                                             Intent i = new Intent(SignInForOwnerActivity.this, BottomTabActivity.class);
                                             startActivity(i);
-                                            Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_SHORT).show();
+                                            showCustomToast("Login successful");
                                         } else {
-                                            Toast.makeText(getApplicationContext(), "Email or password incorrect!", Toast.LENGTH_SHORT).show();
+                                            showCustomToast("Email or password incorrect!");
                                         }
                                     }
 
@@ -131,13 +146,13 @@ public class SignInForOwnerActivity extends AppCompatActivity {
                                 });
                     } else {
                         loadDialog.dismiss();
-                        Toast.makeText(getApplicationContext(), "Login failed!", Toast.LENGTH_SHORT).show();
+                        showCustomToast("Login failed!");
                     }
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "An error occurred", Toast.LENGTH_SHORT).show();
+            showCustomToast("An error occurred");
         }
     }
 

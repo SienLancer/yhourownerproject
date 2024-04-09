@@ -90,6 +90,7 @@ public class SignUpForOwnerActivity extends AppCompatActivity {
 
     private void onClickSignUp() {
         try {
+            loadDialog.show();
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             String username, password, repassword;
             username = usernameOSignUp_edt.getText().toString();
@@ -104,7 +105,7 @@ public class SignUpForOwnerActivity extends AppCompatActivity {
                             String id = task.getResult().getUser().getUid();
                             Owner owner = new Owner(id, "", username, "", 0, password);
                             firebaseDatabase.getReference().child("User").child(id).setValue(owner);
-
+                            loadDialog.dismiss();
                             showCustomToast("Sign up successful!");
                             Intent i = new Intent(SignUpForOwnerActivity.this, SignUpSuccessOwner.class);
                             startActivity(i);

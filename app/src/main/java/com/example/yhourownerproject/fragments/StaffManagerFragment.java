@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.yhourownerproject.R;
@@ -84,61 +85,114 @@ public class StaffManagerFragment extends Fragment {
         return mView;
     }
 
+    private void showCustomToast(String message) {
+        // Inflate layout cho Toast
+        View layout = getLayoutInflater().inflate(R.layout.custom_toast, requireActivity().findViewById(R.id.custom_toast_container));
+
+        // Thiết lập nội dung của Toast
+        TextView textView = layout.findViewById(R.id.custom_toast_text);
+        textView.setText(message);
+
+        // Tạo một Toast và đặt layout của nó
+        Toast toast = new Toast(requireContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+    }
+
     private void loadDataFromFirebase() {
         FirebaseUser user = mAuth.getCurrentUser();
-        String userId = user.getUid();
         if (user != null) {
-            firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+            String userId = user.getUid();
+            firebaseDatabase.getReference("User").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
-                    Log.d(TAG, "Owner Shop ID: " + ownerShopId);
-                    if (ownerShopId != null) {
-                        firebaseDatabase.getReference("User").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                boolean shopFound = false;
-                                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                    String userKey = userSnapshot.getKey();
-                                    Integer userRole = userSnapshot.child("role").getValue(Integer.class);
-                                    String userName = userSnapshot.child("name").getValue(String.class);
-                                    String userId = userSnapshot.child("id").getValue(String.class);
-                                    Log.d(TAG, "User Key: " + userKey);
-                                    Log.d(TAG, "User Name: " + userName);
-                                    Log.d(TAG, "User Role: " + userRole);
-                                    if (userRole != null && userRole.equals(1)){
-                                        Staff staff = new Staff(userId, userName);
-                                        staffList.add(staff);
-                                        adapter.notifyDataSetChanged();
+                    if (snapshot.exists()) {
+                        String ownerShopId = snapshot.child("shopID").getValue(String.class);
+                        Log.d(TAG, "Owner Shop ID: " + ownerShopId);
+                        if (ownerShopId != null) {
+                            firebaseDatabase.getReference("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+
+
+                                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                            String userKey = userSnapshot.getKey();
+                                            Integer userRole = userSnapshot.child("role").getValue(Integer.class);
+                                            String userName = userSnapshot.child("name").getValue(String.class);
+                                            String userId = userSnapshot.child("id").getValue(String.class);
+
+                                            Log.d(TAG, "User Key: " + userKey);
+                                            Log.d(TAG, "User Name: " + userName);
+                                            Log.d(TAG, "User Role: " + userRole);
+
+                                            firebaseDatabase.getReference("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshotShop) {
+                                                    // Kiểm tra xem có tồn tại dữ liệu trong snapshotShop không
+                                                    if (snapshotShop.exists()) {
+                                                        // Truy xuất dữ liệu của shop cụ thể dựa trên ownerShopId
+                                                        DataSnapshot shopSnapshot = snapshotShop.child(ownerShopId);
+                                                        // Kiểm tra xem dữ liệu của shop có tồn tại không
+                                                        if (shopSnapshot.exists()) {
+                                                            // Truy xuất shopId từ dữ liệu của shop
+                                                            String shopIdCheck = shopSnapshot.child("id").getValue(String.class);
+                                                            // Kiểm tra xem shopIdCheck có khớp với ownerShopId không
+                                                            if ( userRole != null && userRole == 1 && shopIdCheck != null && shopIdCheck.equals(ownerShopId)) {
+                                                                // Nếu có, tiến hành tạo đối tượng Staff và thêm vào danh sách staffList
+                                                                Staff staff = new Staff(userId, userName);
+                                                                staffList.add(staff);
+                                                                adapter.notifyDataSetChanged();
+                                                            }
+                                                        } else {
+                                                            // Nếu dữ liệu của shop không tồn tại, cũng hiển thị thông báo "No staff"
+                                                            showCustomToast("No staff");
+                                                        }
+                                                    } else {
+                                                        // Nếu không có dữ liệu trong snapshotShop, cũng hiển thị thông báo "No staff"
+                                                        showCustomToast("No staff");
+                                                    }
+                                                }
+
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                }
+                                            });
+
+
+                                        }
+                                    } else {
+                                        Log.d(TAG, "Snapshot doesn't exist");
                                     }
-
-
                                 }
-//                                if (!shopFound) {
-//                                    Toast.makeText(StaffListActivity.this, "Shop not a", Toast.LENGTH_SHORT).show();
-//                                }
 
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }else {
-                        Toast.makeText(getContext(), "Shop not found", Toast.LENGTH_SHORT).show();
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e(TAG, "Error fetching data: " + error.getMessage());
+                                    Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            Toast.makeText(getContext(), "Shop not found", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.d(TAG, "Snapshot doesn't exist");
+                        Toast.makeText(getContext(), "User data not found", Toast.LENGTH_SHORT).show();
                     }
-
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
+                    Log.e(TAG, "Error fetching data: " + error.getMessage());
+                    Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
                 }
             });
-
         } else {
             Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

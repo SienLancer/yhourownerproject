@@ -20,7 +20,7 @@ public class SignUpSuccessOwner extends AppCompatActivity {
         start_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(SignUpSuccessOwner.this, MainActivity.class);
+                Intent i = new Intent(SignUpSuccessOwner.this, NewShopActivity.class);
                 startActivity(i);
             }
         });
