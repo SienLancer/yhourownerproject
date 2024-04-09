@@ -23,7 +23,6 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.example.yhourownerproject.R;
-import com.example.yhourownerproject.activities.CalendarActivity;
 import com.example.yhourownerproject.activities.NewCalendarActivity;
 import com.example.yhourownerproject.activities.WeekListActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -232,13 +231,7 @@ public class OwnerCalendarFragment extends Fragment {
             }
         });
 
-        view_calendar_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CalendarActivity.class);
-                startActivity(intent);
-            }
-        });
+
 
         new_calendar_btn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -63,7 +63,7 @@ public class WeekListActivity extends AppCompatActivity {
                     String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
                     Log.d(TAG, "Owner Shop ID: " + ownerShopId);
                     if (ownerShopId != null) {
-                        firebaseDatabase.getReference("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
+                        firebaseDatabase.getReference("Shop").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 boolean shopFound = false;
@@ -93,8 +93,6 @@ public class WeekListActivity extends AppCompatActivity {
 
 
                                         break; // Kết thúc vòng lặp khi đã tìm thấy cửa hàng
-                                    }else {
-                                        Toast.makeText(WeekListActivity.this, "List not found", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 if (!shopFound) {
