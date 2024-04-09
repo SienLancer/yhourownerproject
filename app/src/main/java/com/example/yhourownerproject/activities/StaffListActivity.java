@@ -80,91 +80,111 @@ public class StaffListActivity extends AppCompatActivity {
     }
 
     private void loadDataFromFirebase() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
+        try {
+            FirebaseUser user = mAuth.getCurrentUser();
+            if (user != null) {
+                String userId = user.getUid();
 
-            // Fetch shop ID of the current user
-            firebaseDatabase.getReference("User")
-                    .child(userId)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot userSnapshot) {
-                            if (userSnapshot.exists()) {
-                                String ownerShopId = userSnapshot.child("shopID").getValue(String.class);
-                                if (ownerShopId != null) {
-                                    // Fetch all users
-                                    firebaseDatabase.getReference("User")
-                                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot usersSnapshot) {
-                                                    if (usersSnapshot.exists()) {
-                                                        // Fetch shop data once
-                                                        firebaseDatabase.getReference("Shop")
-                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                    @Override
-                                                                    public void onDataChange(@NonNull DataSnapshot shopSnapshot) {
-                                                                        if (shopSnapshot.exists()) {
-                                                                            for (DataSnapshot userSnapshot : usersSnapshot.getChildren()) {
-                                                                                String userKey = userSnapshot.getKey();
-                                                                                Integer userRole = userSnapshot.child("role").getValue(Integer.class);
-                                                                                String userName = userSnapshot.child("name").getValue(String.class);
-                                                                                String userId = userSnapshot.child("id").getValue(String.class);
+                // Fetch shop ID of the current user
+                firebaseDatabase.getReference("User")
+                        .child(userId)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                                try {
+                                    if (userSnapshot.exists()) {
+                                        String ownerShopId = userSnapshot.child("shopID").getValue(String.class);
+                                        if (ownerShopId != null) {
+                                            // Fetch all users
+                                            firebaseDatabase.getReference("User")
+                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot usersSnapshot) {
+                                                            try {
+                                                                if (usersSnapshot.exists()) {
+                                                                    // Fetch shop data once
+                                                                    firebaseDatabase.getReference("Shop")
+                                                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                @Override
+                                                                                public void onDataChange(@NonNull DataSnapshot shopSnapshot) {
+                                                                                    try {
+                                                                                        if (shopSnapshot.exists()) {
+                                                                                            for (DataSnapshot userSnapshot : usersSnapshot.getChildren()) {
+                                                                                                String userKey = userSnapshot.getKey();
+                                                                                                Integer userRole = userSnapshot.child("role").getValue(Integer.class);
+                                                                                                String userName = userSnapshot.child("name").getValue(String.class);
+                                                                                                String userId = userSnapshot.child("id").getValue(String.class);
 
-                                                                                // Check if the user's role is 1 and if their shop ID matches ownerShopId
-                                                                                if (userRole != null && userRole == 1) {
-                                                                                    String staffShopId = userSnapshot.child("shopID").getValue(String.class);
-                                                                                    DataSnapshot shopData = shopSnapshot.child(ownerShopId);
-                                                                                    if (shopData.exists()) {
-                                                                                        String shopIdCheck = shopData.child("id").getValue(String.class);
-                                                                                        if (shopIdCheck != null && shopIdCheck.equals(staffShopId)) {
-                                                                                            Staff staff = new Staff(userId, userName);
-                                                                                            staffList.add(staff);
+                                                                                                // Check if the user's role is 1 and if their shop ID matches ownerShopId
+                                                                                                if (userRole != null && userRole == 1) {
+                                                                                                    String staffShopId = userSnapshot.child("shopID").getValue(String.class);
+                                                                                                    DataSnapshot shopData = shopSnapshot.child(ownerShopId);
+                                                                                                    if (shopData.exists()) {
+                                                                                                        String shopIdCheck = shopData.child("id").getValue(String.class);
+                                                                                                        if (shopIdCheck != null && shopIdCheck.equals(staffShopId)) {
+                                                                                                            Staff staff = new Staff(userId, userName);
+                                                                                                            staffList.add(staff);
+                                                                                                        }
+                                                                                                    } else {
+                                                                                                        showCustomToast("Shop data not found for user: " + userName);
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                            adapter.notifyDataSetChanged();
+                                                                                        } else {
+                                                                                            showCustomToast("Shop data not found");
                                                                                         }
-                                                                                    } else {
-                                                                                        showCustomToast("Shop data not found for user: " + userName);
+                                                                                    } catch (Exception e) {
+                                                                                        Log.e(TAG, "Error fetching shop data: " + e.getMessage());
+                                                                                        Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                                                                     }
                                                                                 }
-                                                                            }
-                                                                            adapter.notifyDataSetChanged();
-                                                                        } else {
-                                                                            showCustomToast("Shop data not found");
-                                                                        }
-                                                                    }
 
-                                                                    @Override
-                                                                    public void onCancelled(@NonNull DatabaseError error) {
-                                                                        Log.e(TAG, "Error fetching shop data: " + error.getMessage());
-                                                                        Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                });
-                                                    } else {
-                                                        showCustomToast("User data not found");
-                                                    }
-                                                }
+                                                                                @Override
+                                                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                                                    Log.e(TAG, "Error fetching shop data: " + error.getMessage());
+                                                                                    Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                                                                }
+                                                                            });
+                                                                } else {
+                                                                    showCustomToast("User data not found");
+                                                                }
+                                                            } catch (Exception e) {
+                                                                Log.e(TAG, "Error fetching user data: " + e.getMessage());
+                                                                Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
 
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-                                                    Log.e(TAG, "Error fetching user data: " + error.getMessage());
-                                                    Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                } else {
-                                    Toast.makeText(StaffListActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError error) {
+                                                            Log.e(TAG, "Error fetching user data: " + error.getMessage());
+                                                            Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                        } else {
+                                            Toast.makeText(StaffListActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } else {
+                                        Toast.makeText(StaffListActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error fetching user data: " + e.getMessage());
+                                    Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                 }
-                            } else {
-                                Toast.makeText(StaffListActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e(TAG, "Error fetching user data: " + error.getMessage());
-                            Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else {
-            Toast.makeText(StaffListActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e(TAG, "Error fetching user data: " + error.getMessage());
+                                Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            } else {
+                Toast.makeText(StaffListActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error fetching current user: " + e.getMessage());
+            Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
         }
     }
 }

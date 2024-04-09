@@ -83,122 +83,143 @@ public class StaffDetailActivity extends AppCompatActivity {
         set_hourly_salary_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.show();
-                title_dialog_tv.setText("Set Hourly Salary");
+                try {
+                    dialog.show();
+                    title_dialog_tv.setText("Set Hourly Salary");
 
-                add_dialog_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Lấy giá trị từ EditText
-                        String inputText = ip_position_dialog_et.getText().toString();
+                    add_dialog_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                // Get value from EditText
+                                String inputText = ip_position_dialog_et.getText().toString();
 
-                        // Kiểm tra xem liệu inputText có phải là số nguyên hay không
-                        try {
-                            int newHourlySalary = Integer.parseInt(inputText);
+                                // Check if inputText is an integer
+                                try {
+                                    int newHourlySalary = Integer.parseInt(inputText);
 
-                            // Nếu giá trị nhập vào là số nguyên, tiếp tục xử lý
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            String userId = user.getUid();
-                            if (user != null) {
-                                firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
-                                        Log.d(TAG, "Owner Shop ID: " + ownerShopId);
-                                        if (ownerShopId != null) {
-                                            // Lấy reference đến vị trí của người dùng để cập nhật dữ liệu
-                                            DatabaseReference userReference = firebaseDatabase.getReference("User").child(staffId);
-                                            userReference.child("hourlySalary").setValue(newHourlySalary).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Toast.makeText(StaffDetailActivity.this, "Hourly salary updated successfully", Toast.LENGTH_SHORT).show();
+                                    // If the input value is an integer, proceed with processing
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    String userId = user.getUid();
+                                    if (user != null) {
+                                        firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                try {
+                                                    String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                                                    Log.d(TAG, "Owner Shop ID: " + ownerShopId);
+                                                    if (ownerShopId != null) {
+                                                        // Get reference to the user's position to update data
+                                                        DatabaseReference userReference = firebaseDatabase.getReference("User").child(staffId);
+                                                        userReference.child("hourlySalary").setValue(newHourlySalary).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    Toast.makeText(StaffDetailActivity.this, "Hourly salary updated successfully", Toast.LENGTH_SHORT).show();
+                                                                } else {
+                                                                    Toast.makeText(StaffDetailActivity.this, "Failed to update hourly salary", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            }
+                                                        });
+
+                                                        // After updating data, you can dismiss the dialog or perform other actions here
+                                                        dialog.dismiss();
                                                     } else {
-                                                        Toast.makeText(StaffDetailActivity.this, "Failed to update hourly salary", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(StaffDetailActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
                                                     }
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
                                                 }
-                                            });
+                                            }
 
-                                            // Cập nhật dữ liệu xong, bạn có thể đóng dialog hoặc thực hiện các hành động khác ở đây
-                                            dialog.dismiss();
-                                        } else {
-                                            Toast.makeText(StaffDetailActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
-                                        }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(StaffDetailActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
                                     }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(StaffDetailActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+                                } catch (NumberFormatException e) {
+                                    // If inputText is not an integer, display error message
+                                    Toast.makeText(StaffDetailActivity.this, "Please enter a valid integer value", Toast.LENGTH_SHORT).show();
+                                    // Clear the content of EditText to request re-entry
+                                    ip_position_dialog_et.setText("");
+                                    // Focus on EditText to prompt user to re-enter
+                                    ip_position_dialog_et.requestFocus();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        } catch (NumberFormatException e) {
-                            // Nếu inputText không phải là số nguyên, hiển thị thông báo lỗi
-                            Toast.makeText(StaffDetailActivity.this, "Please enter a valid integer value", Toast.LENGTH_SHORT).show();
-                            // Xóa nội dung của EditText để yêu cầu nhập lại
-                            ip_position_dialog_et.setText("");
-                            // Focus vào EditText để người dùng nhập lại
-                            ip_position_dialog_et.requestFocus();
                         }
-                    }
-                });
-
-
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
         set_position_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.show();
-                title_dialog_tv.setText("Set Position");
+                try {
+                    dialog.show();
+                    title_dialog_tv.setText("Set Position");
 
-                add_dialog_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        String userId = user.getUid();
-                        if (user != null) {
-                            firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
-                                    Log.d(TAG, "Owner Shop ID: " + ownerShopId);
-                                    if (ownerShopId != null) {
-                                        String newPosition = ip_position_dialog_et.getText().toString();
-                                        // Lấy reference đến vị trí của người dùng để cập nhật dữ liệu
-                                        DatabaseReference userReference = firebaseDatabase.getReference("User").child(staffId);
-                                        userReference.child("position").setValue(newPosition).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Toast.makeText(StaffDetailActivity.this, "Position updated successfully", Toast.LENGTH_SHORT).show();
+                    add_dialog_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                String userId = user.getUid();
+                                if (user != null) {
+                                    firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            try {
+                                                String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                                                Log.d(TAG, "Owner Shop ID: " + ownerShopId);
+                                                if (ownerShopId != null) {
+                                                    String newPosition = ip_position_dialog_et.getText().toString();
+                                                    // Get reference to the user's position to update data
+                                                    DatabaseReference userReference = firebaseDatabase.getReference("User").child(staffId);
+                                                    userReference.child("position").setValue(newPosition).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()) {
+                                                                Toast.makeText(StaffDetailActivity.this, "Position updated successfully", Toast.LENGTH_SHORT).show();
+                                                            } else {
+                                                                Toast.makeText(StaffDetailActivity.this, "Failed to update position", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+
+                                                    // After updating data, you can dismiss the dialog or perform other actions here
+                                                    dialog.dismiss();
                                                 } else {
-                                                    Toast.makeText(StaffDetailActivity.this, "Failed to update position", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(StaffDetailActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
                                                 }
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
                                             }
-                                        });
+                                        }
 
-                                        // Cập nhật dữ liệu xong, bạn có thể đóng dialog hoặc thực hiện các hành động khác ở đây
-                                        dialog.dismiss();
-                                    } else {
-                                        Toast.makeText(StaffDetailActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
-                                    }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(StaffDetailActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
                                 }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        } else {
-                            Toast.makeText(StaffDetailActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                });
-
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -225,81 +246,72 @@ public class StaffDetailActivity extends AppCompatActivity {
     }
 
     private void loadDataFromFirebase() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        String userId = user.getUid();
-        if (user != null) {
-            firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
-                    Log.d(TAG, "Owner Shop ID: " + ownerShopId);
-                    if (ownerShopId != null) {
-                        firebaseDatabase.getReference("User").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                                boolean shopFound = false;
-                                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                    String userKey = userSnapshot.getKey();
+        try {
+            FirebaseUser user = mAuth.getCurrentUser();
+            String userId = user.getUid();
+            if (user != null) {
+                firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        try {
+                            String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                            Log.d(TAG, "Owner Shop ID: " + ownerShopId);
+                            if (ownerShopId != null) {
+                                firebaseDatabase.getReference("User").addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        try {
+                                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                                String userKey = userSnapshot.getKey();
+                                                if (userKey != null && userKey.equals(staffId)){
+                                                    String userName = userSnapshot.child("name").getValue(String.class);
+                                                    String userDob = userSnapshot.child("dateOfBirth").getValue(String.class);
+                                                    String userAddress = userSnapshot.child("address").getValue(String.class);
+                                                    String userPhone = userSnapshot.child("phoneNumber").getValue(String.class);
+                                                    String userEmail = userSnapshot.child("email").getValue(String.class);
+                                                    String userPosition = userSnapshot.child("position").getValue(String.class);
+                                                    Integer userSalary = userSnapshot.child("hourlySalary").getValue(Integer.class);
 
+                                                    data_staff_name_tv.setText(userName);
+                                                    data_staff_dob_tv.setText(userDob);
+                                                    data_staff_address_tv.setText(userAddress);
+                                                    data_staff_phone_tv.setText(userPhone);
+                                                    data_staff_email_tv.setText(userEmail);
+                                                    data_staff_position_tv.setText(userPosition);
+                                                    data_staff_hourly_salary_tv.setText(userSalary+"");
 
-                                    if (userKey != null && userKey.equals(staffId)){
-//                                        Staff staff = new Staff(userId, userName, userDob, userAddress, userPhone, userEmail, userPosition, userSalary);
-//                                        staffList.add(staff);
-                                        Log.d(TAG, "User Key check: " + userKey);
-                                        String userName = userSnapshot.child("name").getValue(String.class);
-                                        Log.d(TAG, "User Name: " + userName);
-                                        String userDob = userSnapshot.child("dateOfBirth").getValue(String.class);
-                                        Log.d(TAG, "User Dob: " + userDob);
-                                        String userAddress = userSnapshot.child("address").getValue(String.class);
-                                        Log.d(TAG, "User Address: " + userAddress);
-                                        String userPhone = userSnapshot.child("phoneNumber").getValue(String.class);
-                                        String userEmail = userSnapshot.child("email").getValue(String.class);
-                                        Log.d(TAG, "User Phone: " + userPhone);
-                                        Log.d(TAG, "User Email: " + userEmail);
-                                        String userPosition = userSnapshot.child("position").getValue(String.class);
-                                        Log.d(TAG, "User Position: " + userPosition);
-                                        Integer userSalary = userSnapshot.child("hourlySalary").getValue(Integer.class);
-                                        Log.d(TAG, "User Salary: " + userSalary);
-
-
-                                        data_staff_name_tv.setText(userName);
-                                        data_staff_dob_tv.setText(userDob);
-                                        data_staff_address_tv.setText(userAddress);
-                                        data_staff_phone_tv.setText(userPhone);
-                                        data_staff_email_tv.setText(userEmail);
-                                        data_staff_position_tv.setText(userPosition);
-                                        data_staff_hourly_salary_tv.setText(userSalary+"");
-
-                                        return; // Kết thúc vòng lặp sau khi tìm thấy tuần có ID trùng khớp
+                                                    return;
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
-
-                                }
-//                                if (!shopFound) {
-//                                    Toast.makeText(StaffListActivity.this, "Shop not a", Toast.LENGTH_SHORT).show();
-//                                }
-
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(StaffDetailActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
                             }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }else {
-                        Toast.makeText(StaffDetailActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
 
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-
-        } else {
-            Toast.makeText(StaffDetailActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(StaffDetailActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
