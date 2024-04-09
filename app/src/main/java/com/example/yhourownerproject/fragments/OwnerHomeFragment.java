@@ -116,57 +116,59 @@ public class OwnerHomeFragment extends Fragment {
         loading_imgv.startAnimation(animation);
     }
 
-    public void realtimeQrcode(){
-        loadDialog.show();
-        FirebaseUser user = mAuth.getCurrentUser();
-        String userId = user.getUid();
-        if (user != null) {
-            firebaseDatabase.getReference().addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
-                    if(ownerShopId != null){
-                        firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("QRCode").child("codeScan")
-                                .addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        String realtimeqr = snapshot.getValue(String.class);
-                                        MultiFormatWriter mulitFormatWriter = new MultiFormatWriter();
-                                        try {
-                                            BitMatrix matrix = mulitFormatWriter.encode(realtimeqr, BarcodeFormat.QR_CODE, 700, 700);
-                                            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                                            Bitmap bitmap = barcodeEncoder.createBitmap(matrix);
+    public void realtimeQrcode() {
+        try {
+            loadDialog.show();
+            FirebaseUser user = mAuth.getCurrentUser();
+            String userId = user.getUid();
+            if (user != null) {
+                firebaseDatabase.getReference().addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                        if (ownerShopId != null) {
+                            firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("QRCode").child("codeScan")
+                                    .addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            String realtimeqr = snapshot.getValue(String.class);
+                                            MultiFormatWriter mulitFormatWriter = new MultiFormatWriter();
+                                            try {
+                                                BitMatrix matrix = mulitFormatWriter.encode(realtimeqr, BarcodeFormat.QR_CODE, 700, 700);
+                                                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                                                Bitmap bitmap = barcodeEncoder.createBitmap(matrix);
 
-                                            qrcode_imgView.setImageBitmap(bitmap);
-                                            loadDialog.dismiss();
+                                                qrcode_imgView.setImageBitmap(bitmap);
+                                                loadDialog.dismiss();
 
-                                        }catch (Exception e){
-                                            throw new RuntimeException(e);
+                                            } catch (Exception e) {
+                                                throw new RuntimeException(e);
+                                            }
                                         }
-                                    }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(getContext(), "Shop not found", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                    else {
-                        Toast.makeText(getContext(), "Shop not found", Toast.LENGTH_SHORT).show();
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
                     }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
-        }else {
-            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+                });
+            } else {
+                Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "An error occurred", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     public void setToday(String date) {
         today.setText(date);}
