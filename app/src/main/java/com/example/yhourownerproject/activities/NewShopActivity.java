@@ -122,10 +122,11 @@ public class NewShopActivity extends AppCompatActivity {
                 }
 
                 // Tạo một đối tượng Shop mới với thông tin được cung cấp
-                Shop newShop = new Shop(name, address, email, phoneNumber);
+                DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").push(); // Generate unique ID
+                String id = shopRef.getKey(); // Get the generated ID
+                Shop newShop = new Shop(id, name, address, email, phoneNumber);
 
                 // Thêm dữ liệu của cửa hàng mới vào Firebase
-                DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").push();
                 shopRef.setValue(newShop)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -133,7 +134,7 @@ public class NewShopActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     // Thêm child QRCode với codeScan là "new"
                                     shopRef.child("QRCode").child("codeScan").setValue("new");
-                                    firebaseDatabase.getReference().child("User").child(userId).child("shopID").setValue(shopRef.getKey());
+                                    firebaseDatabase.getReference().child("User").child(userId).child("shopID").setValue(id); // Store shop ID under user
                                     showCustomToast("New shop added successfully");
                                     loadDialog.dismiss();
                                     Intent intent = new Intent(NewShopActivity.this, BottomTabActivity.class);
@@ -151,6 +152,7 @@ public class NewShopActivity extends AppCompatActivity {
             showCustomToast("An error occurred");
         }
     }
+
 
 
 
