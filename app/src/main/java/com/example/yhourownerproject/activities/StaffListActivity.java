@@ -1,24 +1,24 @@
-package com.example.yhourownerproject.fragments;
+package com.example.yhourownerproject.activities;
 
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.yhourownerproject.R;
-import com.example.yhourownerproject.activities.SignUpForStaffActivity;
 import com.example.yhourownerproject.adapter.StaffAdapter;
 import com.example.yhourownerproject.roles.Staff;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,10 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class StaffManagerFragment extends Fragment {
-    private View mView;
-
+public class StaffListActivity extends AppCompatActivity {
     FloatingActionButton create_staff_btn;
 
     private RecyclerView recyclerView;
@@ -44,57 +41,39 @@ public class StaffManagerFragment extends Fragment {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
-
-    public StaffManagerFragment() {
-        // Required empty public constructor
-    }
-
-    public static StaffManagerFragment newInstance(String param1, String param2) {
-        StaffManagerFragment fragment = new StaffManagerFragment();
-
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.fragment_staff_manager, container, false);
-        create_staff_btn = mView.findViewById(R.id.create_staff_btn);
-        recyclerView = mView.findViewById(R.id.recycler_view_staff_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_staff_list);
+        create_staff_btn = findViewById(R.id.create_staff_btn);
+        recyclerView = findViewById(R.id.recycler_view_staff_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(StaffListActivity.this));
         adapter = new StaffAdapter(staffList);
         recyclerView.setAdapter(adapter);
 
         create_staff_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), SignUpForStaffActivity.class);
+                Intent intent = new Intent(StaffListActivity.this, SignUpForStaffActivity.class);
                 startActivity(intent);
             }
         });
 
         loadDataFromFirebase();
 
-        return mView;
     }
 
     private void showCustomToast(String message) {
         // Inflate layout cho Toast
-        View layout = getLayoutInflater().inflate(R.layout.custom_toast, requireActivity().findViewById(R.id.custom_toast_container));
+        View layout = getLayoutInflater().inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_container));
 
         // Thiết lập nội dung của Toast
         TextView textView = layout.findViewById(R.id.custom_toast_text);
         textView.setText(message);
 
         // Tạo một Toast và đặt layout của nó
-        Toast toast = new Toast(requireContext());
+        Toast toast = new Toast(getApplicationContext());
         toast.setDuration(Toast.LENGTH_SHORT);
         toast.setView(layout);
         toast.show();
@@ -156,7 +135,7 @@ public class StaffManagerFragment extends Fragment {
                                                                     @Override
                                                                     public void onCancelled(@NonNull DatabaseError error) {
                                                                         Log.e(TAG, "Error fetching shop data: " + error.getMessage());
-                                                                        Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                                                        Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                                                     }
                                                                 });
                                                     } else {
@@ -167,28 +146,25 @@ public class StaffManagerFragment extends Fragment {
                                                 @Override
                                                 public void onCancelled(@NonNull DatabaseError error) {
                                                     Log.e(TAG, "Error fetching user data: " + error.getMessage());
-                                                    Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
                                                 }
                                             });
                                 } else {
-                                    Toast.makeText(getContext(), "Shop not found", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(StaffListActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
-                                Toast.makeText(getContext(), "User data not found", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(StaffListActivity.this, "User data not found", Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
                             Log.e(TAG, "Error fetching user data: " + error.getMessage());
-                            Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(StaffListActivity.this, "Error", Toast.LENGTH_SHORT).show();
                         }
                     });
         } else {
-            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+            Toast.makeText(StaffListActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
 }

@@ -11,8 +11,6 @@ import com.example.yhourownerproject.R;
 import com.example.yhourownerproject.fragments.OwnerCalendarFragment;
 import com.example.yhourownerproject.fragments.OwnerHomeFragment;
 import com.example.yhourownerproject.fragments.OwnerProfileFragment;
-import com.example.yhourownerproject.fragments.ShopManagerFragment;
-import com.example.yhourownerproject.fragments.StaffManagerFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class BottomTabActivity extends AppCompatActivity {
@@ -35,10 +33,6 @@ public class BottomTabActivity extends AppCompatActivity {
                 replaceFragment(new OwnerCalendarFragment());
             }else if (id == R.id.profile_owner) {
                 replaceFragment(new OwnerProfileFragment());
-            }else if (id == R.id.shopmanager_owner) {
-                replaceFragment(new ShopManagerFragment());
-            }else if (id == R.id.staffmanager_owner) {
-                replaceFragment(new StaffManagerFragment());
             }
             return true;
         });

@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragments.StaffManagerFragment">
+    tools:context=".activities.StaffListActivity">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:id="@+id/title_staff_list_tv"
         android:layout_height="wrap_content"
-        android:text="Staff managerment"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:text="Staff List"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

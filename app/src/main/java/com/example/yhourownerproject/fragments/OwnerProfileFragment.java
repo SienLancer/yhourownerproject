@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.yhourownerproject.R;
 import com.example.yhourownerproject.activities.SignInForOwnerActivity;
+import com.example.yhourownerproject.activities.StaffListActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -23,7 +24,7 @@ public class OwnerProfileFragment extends Fragment {
     private View mView;
     private TextView staff_name_tv, owner_email_tv;
 
-    Button logoutS_btn;
+    Button logoutS_btn, staff_list_btn;
 
     public OwnerProfileFragment() {
         // Required empty public constructor
@@ -47,6 +48,7 @@ public class OwnerProfileFragment extends Fragment {
         mView = inflater.inflate(R.layout.fragment_owner_profile, container, false);
         logoutS_btn = mView.findViewById(R.id.logoutS_btn);
         owner_email_tv = mView.findViewById(R.id.owner_email_tv);
+        staff_list_btn = mView.findViewById(R.id.staff_list_btn);
 
         showUserInfo();
         logoutS_btn.setOnClickListener(new View.OnClickListener() {
@@ -56,6 +58,14 @@ public class OwnerProfileFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), SignInForOwnerActivity.class);
                 startActivity(intent);
                 getActivity().finish();
+            }
+        });
+
+        staff_list_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), StaffListActivity.class);
+                startActivity(intent);
             }
         });
         return mView;
