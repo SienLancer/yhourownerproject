@@ -6,9 +6,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/ic_app"
+        android:label="YHour Owner"
+        android:roundIcon="@drawable/ic_app"
         android:supportsRtl="true"
         android:theme="@style/Theme.YhourOwnerProject"
         tools:targetApi="31">
@@ -36,9 +36,7 @@
         <activity
             android:name=".activities.NewCalendarActivity"
             android:exported="false" />
-        <activity
-            android:name=".activities.CalendarActivity"
-            android:exported="false" />
+
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true">
