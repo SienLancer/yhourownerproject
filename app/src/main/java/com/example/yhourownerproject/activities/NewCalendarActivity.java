@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -150,6 +151,13 @@ public class NewCalendarActivity extends AppCompatActivity {
                                                 String weekName = week_name_et.getText().toString();
                                                 String startDay = start_day_tv.getText().toString();
                                                 String endDay = end_day_tv.getText().toString();
+                                                if (TextUtils.isEmpty(weekName)){
+                                                    showCustomToast("Please enter week name");
+                                                    return;
+                                                }else if (startDay.equals("Click here to select the calendar start date") || endDay.equals("Click here to select the calendar end date")){
+                                                    showCustomToast("Please select the calendar start date and end date");
+                                                    return;
+                                                }
                                                 SimpleDateFormat targetFormat = new SimpleDateFormat("dd/MM/yyyy");
                                                 try {
                                                     Date startDate = targetFormat.parse(startDay);
