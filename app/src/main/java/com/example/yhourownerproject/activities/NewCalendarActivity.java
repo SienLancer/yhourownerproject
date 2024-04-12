@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.yhourownerproject.R;
 import com.example.yhourownerproject.fragments.OwnerCalendarFragment;
@@ -28,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -115,106 +117,144 @@ public class NewCalendarActivity extends AppCompatActivity {
     public void addDataCalendar() {
         FirebaseUser user = mAuth.getCurrentUser();
         String userId = user.getUid();
-        if (user != null) {
-            // Lấy thời gian hiện tại
-            long timestamp = System.currentTimeMillis();
-            firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
-                    Log.d(TAG, "Owner Shop ID: " + ownerShopId);
-                    firebaseDatabase.getReference("Shop").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            boolean shopFound = false;
-                            for (DataSnapshot shopSnapshot : snapshot.getChildren()) {
-                                String shopKey = shopSnapshot.getKey();
-                                Log.d(TAG, "Shop Key: " + shopKey);
-                                if (ownerShopId.equals(shopKey)) {
-                                    shopFound = true;
-                                    //Toast.makeText(NewCalendarActivity.this, "Shop found", Toast.LENGTH_SHORT).show();
-                                    // Thực hiện các hành động cần thiết khi tìm thấy cửa hàng
+        try {
+            if (user != null) {
+                // Lấy thời gian hiện tại
+                long timestamp = System.currentTimeMillis();
+                DatabaseReference userRef = firebaseDatabase.getReference().child("User").child(userId).child("shopID");
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        try {
+                            String ownerShopId = snapshot.getValue(String.class);
+                            if (ownerShopId != null) {
+                                DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").child(ownerShopId);
+                                shopRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        try {
+                                            if (snapshot.exists()) {
+                                                // Cửa hàng được tìm thấy
+                                                DataSnapshot calendarSnapshot = snapshot.child("Calendar");
 
-                                    for (DataSnapshot calendarSnapshot : shopSnapshot.child("Calendar").getChildren()) {
-                                        String weekId = calendarSnapshot.getKey();
-                                        Log.d(TAG, "Week Key: " + weekId);
-                                        weekKeys.add(weekId); // Thêm weekKey vào danh sách
-                                    }
+                                                // Tiếp tục xử lý với dữ liệu của "Calendar"
+                                                boolean shopFound = false;
+                                                for (DataSnapshot calendarWeekSnapshot : calendarSnapshot.getChildren()) {
+                                                    String weekId = calendarWeekSnapshot.getKey();
+                                                    // Thêm weekKey vào danh sách
+                                                    weekKeys.add(weekId);
+                                                }
 
-                                    // Kiểm tra weekName với các weekKey trong danh sách
-                                    boolean weekExists = false;
-                                    String weekName = week_name_et.getText().toString();
-                                    Log.d(TAG, "Week Name: " + weekName);
-                                    String startDay = start_day_tv.getText().toString();
-                                    String endDay = end_day_tv.getText().toString();
-                                    SimpleDateFormat targetFormat = new SimpleDateFormat("dd/MM/yyyy");
-                                    try {
-                                        Date startDate = targetFormat.parse(startDay);
-                                        Date endDate = targetFormat.parse(endDay);
-                                        startDay = targetFormat.format(startDate);
-                                        endDay = targetFormat.format(endDate);
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
-                                    }
+                                                // Kiểm tra weekName với các weekKey trong danh sách
+                                                boolean weekExists = false;
+                                                String weekName = week_name_et.getText().toString();
+                                                String startDay = start_day_tv.getText().toString();
+                                                String endDay = end_day_tv.getText().toString();
+                                                SimpleDateFormat targetFormat = new SimpleDateFormat("dd/MM/yyyy");
+                                                try {
+                                                    Date startDate = targetFormat.parse(startDay);
+                                                    Date endDate = targetFormat.parse(endDay);
+                                                    startDay = targetFormat.format(startDate);
+                                                    endDay = targetFormat.format(endDate);
+                                                } catch (ParseException e) {
+                                                    e.printStackTrace();
+                                                }
 
-                                    for (String weekKey : weekKeys) {
-                                        if (weekName.equalsIgnoreCase(weekKey)) {
-                                            weekExists = true;
-                                            // Nếu weekName trùng với weekKey
-                                            Toast.makeText(NewCalendarActivity.this, "Week already exists", Toast.LENGTH_SHORT).show();
-                                            break; // Kết thúc kiểm tra khi tìm thấy weekName trùng với weekKey
+                                                for (String weekKey : weekKeys) {
+                                                    if (weekName.equalsIgnoreCase(weekKey)) {
+                                                        weekExists = true;
+                                                        // Nếu weekName trùng với weekKey
+                                                        Toast.makeText(NewCalendarActivity.this, "Week already exists", Toast.LENGTH_SHORT).show();
+                                                        break; // Kết thúc kiểm tra khi tìm thấy weekName trùng với weekKey
+                                                    }
+                                                }
+                                                if (!weekExists) {
+                                                    // Nếu weekName không trùng với bất kỳ weekKey nào trong danh sách
+                                                    String weekNameTimestamp = timestamp + ":" + weekName;
+                                                    Week week = new Week(weekNameTimestamp,
+                                                            "Morning shift is empty", "Afternoon shift is empty", "Evening shift is empty",
+                                                            "Morning shift is empty", "Afternoon shift is empty", "Evening shift is empty",
+                                                            "Morning shift is empty", "Afternoon shift is empty", "Evening shift is empty",
+                                                            "Morning shift is empty", "Afternoon shift is empty", "Evening shift is empty",
+                                                            "Morning shift is empty", "Afternoon shift is empty", "Evening shift is empty",
+                                                            "Morning shift is empty", "Afternoon shift is empty", "Evening shift is empty",
+                                                            "Morning shift is empty", "Afternoon shift is empty", "Evening shift is empty",
+                                                            "6:00", "12:00", "12:00", "17:00", "17:00",
+                                                            "22:00", startDay, endDay, "Opening");
+
+                                                    firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar").child(weekNameTimestamp).setValue(week).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            try {
+                                                                if (task.isSuccessful()) {
+                                                                    showCustomToast("Week added successfully");
+                                                                    finish();
+                                                                } else {
+                                                                    showCustomToast("Failed to add week");
+                                                                }
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            } else {
+                                                // Cửa hàng không tồn tại
+                                                showCustomToast("Shop not found");
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
                                     }
-                                    if (!weekExists) {
-                                        // Nếu weekName không trùng với bất kỳ weekKey nào trong danh sách
-                                        //Toast.makeText(NewCalendarActivity.this, "Week added", Toast.LENGTH_SHORT).show();
-                                        // Thực hiện các hành động cần thiết khi thêm tuần mới vào lịch của cửa
-                                        Week week = new Week(timestamp+weekName,"", "", "", "", "", "", "", "", "",
-                                              "", "", "", "", "", "", "", "", "", "", "",
-                                               "", "6:00", "12:00", "12:00", "17:00", "17:00",
-                                                "22:00", startDay, endDay, "Opening");
-                                        String weekNameTimestamp = timestamp+ weekName;
-                                        firebaseDatabase.getReference().child("Shop").child(shopKey).child("Calendar").child(weekNameTimestamp).setValue(week).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Toast.makeText(NewCalendarActivity.this, "Calendar added", Toast.LENGTH_SHORT).show();
 
-                                                } else {
-                                                    Toast.makeText(NewCalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-//                                        Intent intent = new Intent(NewCalendarActivity.this, OwnerCalendarFragment.class);
-//                                        startActivity(intent);
-                                        break; // Kết thúc vòng lặp khi thêm tuần mới thành công
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        try {
+                                            Toast.makeText(NewCalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                     }
-
-                                    break; // Kết thúc vòng lặp khi đã tìm thấy cửa hàng
-                                }
-                                break; // Kết thúc vòng lặp khi đã tìm thấy cửa hàng
+                                });
+                            } else {
+                                // Không tìm thấy shopID cho user này
+                                showCustomToast("Shop not found");
                             }
-                            if (!shopFound) {
-                                Toast.makeText(NewCalendarActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
-                            }
-
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        try {
                             Toast.makeText(NewCalendarActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    });
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-
-        } else {
-            Toast.makeText(NewCalendarActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                showCustomToast("User not logged in");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+    private void showCustomToast(String message) {
+        // Inflate layout cho Toast
+        View layout = getLayoutInflater().inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_container));
+
+        // Thiết lập nội dung của Toast
+        TextView textView = layout.findViewById(R.id.custom_toast_text);
+        textView.setText(message);
+
+        // Tạo một Toast và đặt layout của nó
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+    }
+
 }

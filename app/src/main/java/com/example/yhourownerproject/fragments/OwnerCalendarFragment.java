@@ -65,7 +65,7 @@ public class OwnerCalendarFragment extends Fragment {
             morningSstart_fri, morningSend_fri, afternoonSstart_fri, afternoonSend_fri, eveningSstart_fri, eveningSend_fri,
             morningSstart_sat, morningSend_sat, afternoonSstart_sat, afternoonSend_sat, eveningSstart_sat, eveningSend_sat,
             morningSstart_sun, morningSend_sun, afternoonSstart_sun, afternoonSend_sun, eveningSstart_sun, eveningSend_sun,
-            dialog_title, dialog_message;
+            dialog_title, dialog_message, title_timetable_tv;
 
 
     public OwnerCalendarFragment() {
@@ -346,6 +346,10 @@ public class OwnerCalendarFragment extends Fragment {
                                 if (lastWeekSnapshot != null) {
                                     // Hiển thị dữ liệu từ tuần cuối cùng lên giao diện người dùng
                                     // Lấy dữ liệu từ tuần cuối cùng và hiển thị lên giao diện
+                                    String nameWeek = lastWeekSnapshot.child("id").getValue(String.class);
+                                    String[] parts = nameWeek.split(":");
+                                    String namePart = parts[1];
+                                    title_timetable_tv.setText(namePart);
                                     start_end_date_tv.setText(lastWeekSnapshot.child("startDay").getValue(String.class) + " - " + lastWeekSnapshot.child("endDay").getValue(String.class));
                                     Mon1.setText(lastWeekSnapshot.child("mon1").getValue(String.class));
                                     Mon2.setText(lastWeekSnapshot.child("mon2").getValue(String.class));
@@ -445,6 +449,7 @@ public class OwnerCalendarFragment extends Fragment {
         view_calendar_btn = mView.findViewById(R.id.view_calendar_btn);
         stastus_table_fabtn = mView.findViewById(R.id.stastus_table_fabtn);
         new_calendar_btn = mView.findViewById(R.id.new_calendar_btn);
+        title_timetable_tv = mView.findViewById(R.id.title_timetable_tv);
         list_calendar_btn = mView.findViewById(R.id.list_calendar_btn);
         viewFlipper = mView.findViewById(R.id.view_flipper);
         start_end_date_tv = mView.findViewById(R.id.start_end_date_tv);
