@@ -109,7 +109,6 @@ public class StaffOnShiftActivity extends AppCompatActivity {
                                                                                                     String staffShopId = userSnapshot.child("shopID").getValue(String.class);
                                                                                                     DataSnapshot timekeepingSnapshot = userSnapshot.child("timekeeping");
                                                                                                     if (timekeepingSnapshot.exists()) {
-                                                                                                        boolean staffFound = false; // Biến này sẽ đánh dấu xem có nhân viên nào có giờ làm việc hay không
                                                                                                         for (DataSnapshot timeSnapshot : timekeepingSnapshot.getChildren()) {
                                                                                                             String checkOutSnapshot = timeSnapshot.child("checkOut").getValue(String.class);
                                                                                                             String checkIn = timeSnapshot.child("checkIn").getValue(String.class);
@@ -121,14 +120,11 @@ public class StaffOnShiftActivity extends AppCompatActivity {
                                                                                                                     if (shopIdCheck != null && shopIdCheck.equals(staffShopId)) {
                                                                                                                         Staff staff = new Staff(userId, userName, checkIn);
                                                                                                                         staffList.add(staff);
-                                                                                                                        staffFound = true; // Đánh dấu là đã tìm thấy ít nhất một nhân viên có giờ làm việc
                                                                                                                     }
                                                                                                                 }
                                                                                                             }
                                                                                                         }
-                                                                                                        if (!staffFound) {
-                                                                                                            showCustomToast("There are no staff on shift");
-                                                                                                        }
+
                                                                                                     } else {
                                                                                                         Log.d(TAG, "Timekeeping data not found for user: " + userName);
                                                                                                     }
