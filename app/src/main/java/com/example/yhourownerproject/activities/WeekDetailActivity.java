@@ -55,7 +55,7 @@ public class WeekDetailActivity extends AppCompatActivity {
             morningSstart_fri, morningSend_fri, afternoonSstart_fri, afternoonSend_fri, eveningSstart_fri, eveningSend_fri,
             morningSstart_sat, morningSend_sat, afternoonSstart_sat, afternoonSend_sat, eveningSstart_sat, eveningSend_sat,
             morningSstart_sun, morningSend_sun, afternoonSstart_sun, afternoonSend_sun, eveningSstart_sun, eveningSend_sun,
-            start_end_date_tv;
+            start_end_date_tv, title_timetable_tv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +121,10 @@ public class WeekDetailActivity extends AppCompatActivity {
                                     // So sánh ID của tuần với weekId
                                     if (weekSnapshotId != null && weekSnapshotId.equals(weekId)) {
                                         // Hiển thị dữ liệu từ tuần có ID trùng khớp lên giao diện người dùng
+                                        String nameWeek = weekSnapshot.child("id").getValue(String.class);
+                                        String[] parts = nameWeek.split(":");
+                                        String namePart = parts[1];
+                                        title_timetable_tv.setText(namePart);
                                         start_end_date_tv.setText(weekSnapshot.child("startDay").getValue(String.class) + " - " + weekSnapshot.child("endDay").getValue(String.class));
                                         Mon1.setText(weekSnapshot.child("mon1").getValue(String.class));
                                         Mon2.setText(weekSnapshot.child("mon2").getValue(String.class));
@@ -230,7 +234,7 @@ public class WeekDetailActivity extends AppCompatActivity {
 
 
     public void init(){
-
+        title_timetable_tv = findViewById(R.id.title_timetable_tv);
         viewFlipper = findViewById(R.id.view_flipper);
         start_end_date_tv = findViewById(R.id.start_end_date_tv);
 

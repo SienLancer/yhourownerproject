@@ -14,6 +14,7 @@ public class Staff {
     private Integer role;
     private String shopID;
     private String password;
+    private String checkIn;
 
 
     public Staff(){
@@ -22,6 +23,12 @@ public class Staff {
     public Staff(String id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Staff(String id, String name, String checkIn) {
+        this.id = id;
+        this.name = name;
+        this.checkIn = checkIn;
     }
 
     public Staff(String id, String name, String dateOfBirth, String address, Integer phoneNumber, String email, String position, Integer hourlySalary, Integer role, String shopID, String password) {
@@ -36,6 +43,14 @@ public class Staff {
         this.role = role;
         this.shopID = shopID;
         this.password = password;
+    }
+
+    public String getCheckIn() {
+        return checkIn;
+    }
+
+    public void setCheckIn(String checkIn) {
+        this.checkIn = checkIn;
     }
 
     public String getId() {

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.YhourOwnerProject"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.StaffOnShiftActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.StaffListActivity"
             android:exported="false" />
@@ -36,7 +41,6 @@
         <activity
             android:name=".activities.NewCalendarActivity"
             android:exported="false" />
-
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true">

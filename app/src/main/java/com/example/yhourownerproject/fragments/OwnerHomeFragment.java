@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.yhourownerproject.R;
 import com.example.yhourownerproject.activities.BottomTabActivity;
+import com.example.yhourownerproject.activities.StaffOnShiftActivity;
 import com.example.yhourownerproject.roles.Users;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,6 +46,7 @@ import java.time.LocalDate;
  * create an instance of this fragment.
  */
 public class OwnerHomeFragment extends Fragment {
+    Button staff_on_shift_btn;
 
     private View mView;
     TextView today;
@@ -77,16 +79,18 @@ public class OwnerHomeFragment extends Fragment {
         mView = inflater.inflate(R.layout.fragment_owner_home, container, false);
         today = mView.findViewById(R.id.today);
         qrcode_imgView = mView.findViewById(R.id.qrcode_imgView);
+        staff_on_shift_btn = mView.findViewById(R.id.staff_on_shift_btn);
 
         loadDialog();
         realtimeQrcode();
 
-
-
-
-
-
-
+        staff_on_shift_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), StaffOnShiftActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
         return mView;

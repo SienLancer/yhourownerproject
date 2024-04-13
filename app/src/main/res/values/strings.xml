@@ -2,4 +2,6 @@
     <string name="app_name">YhourOwnerProject</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sender_id">YOUR_SENDER_ID_HERE</string>
+
 </resources>
