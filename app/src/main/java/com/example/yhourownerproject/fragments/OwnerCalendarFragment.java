@@ -45,6 +45,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -55,9 +57,10 @@ public class OwnerCalendarFragment extends Fragment {
     FloatingActionButton new_calendar_btn;
     ViewFlipper viewFlipper;
     TextView start_end_date_tv;
-    EditText ip_shift_et;
-    Button add_shift_btn,cancel_btn;
-    Dialog dialog;
+    EditText ip_shift_et, week_name_et;
+    Button add_shift_btn,cancel_btn, add_calendar_btn;
+    List<String> weekKeys = new ArrayList<>();
+    Dialog dialog, newWeekDialog;
     FloatingActionButton stastus_table_fabtn;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -80,7 +83,7 @@ public class OwnerCalendarFragment extends Fragment {
             morningSstart_fri, morningSend_fri, afternoonSstart_fri, afternoonSend_fri, eveningSstart_fri, eveningSend_fri,
             morningSstart_sat, morningSend_sat, afternoonSstart_sat, afternoonSend_sat, eveningSstart_sat, eveningSend_sat,
             morningSstart_sun, morningSend_sun, afternoonSstart_sun, afternoonSend_sun, eveningSstart_sun, eveningSend_sun,
-            dialog_title, dialog_message, title_timetable_tv;
+            start_day_tv, end_day_tv, title_timetable_tv;
 
 
     public OwnerCalendarFragment() {
@@ -290,8 +293,9 @@ public class OwnerCalendarFragment extends Fragment {
         new_calendar_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), NewCalendarActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), NewCalendarActivity.class);
+//                startActivity(intent);
+                newWeekDialog.show();
             }
         });
 
@@ -605,6 +609,12 @@ public class OwnerCalendarFragment extends Fragment {
         add_shift_btn =dialog.findViewById(R.id.add_shift_btn);
         cancel_btn =dialog.findViewById(R.id.cancel_btn);
 
+        newWeekDialog = new Dialog(getContext());
+        newWeekDialog.setContentView(R.layout.add_calendar_dialog);
+        newWeekDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        week_name_et = newWeekDialog.findViewById(R.id.week_name_et);
+        start_day_tv = newWeekDialog.findViewById(R.id.start_day_tv);
+        end_day_tv = newWeekDialog.findViewById(R.id.end_day_tv);
 
 
     }
