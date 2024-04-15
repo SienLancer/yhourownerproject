@@ -57,12 +57,11 @@ import java.util.List;
 public class OwnerCalendarFragment extends Fragment {
     private View mView;
     LinearLayout list_week_layout;
-    Button view_calendar_btn;
     FloatingActionButton new_calendar_btn;
     ViewFlipper viewFlipper;
     TextView start_end_date_tv;
     EditText ip_shift_et, week_name_et;
-    Button add_shift_btn,cancel_btn, add_calendar_btn;
+    Button add_shift_btn, add_calendar_btn;
     List<String> weekKeys = new ArrayList<>();
     Dialog dialog, newWeekDialog;
     FloatingActionButton stastus_table_fabtn;
@@ -741,7 +740,6 @@ public class OwnerCalendarFragment extends Fragment {
 
 
     public void init(){
-        view_calendar_btn = mView.findViewById(R.id.view_calendar_btn);
         list_week_layout = mView.findViewById(R.id.list_week_layout);
         new_calendar_btn = mView.findViewById(R.id.new_calendar_btn);
         stastus_table_btn = mView.findViewById(R.id.stastus_table_btn);
@@ -833,7 +831,6 @@ public class OwnerCalendarFragment extends Fragment {
 
         ip_shift_et=dialog.findViewById(R.id.ip_shift_et);
         add_shift_btn =dialog.findViewById(R.id.add_shift_btn);
-        cancel_btn =dialog.findViewById(R.id.cancel_btn);
 
         newWeekDialog = new Dialog(getContext());
         newWeekDialog.setContentView(R.layout.add_calendar_dialog);

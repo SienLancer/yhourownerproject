@@ -46,7 +46,7 @@ public class StaffDetailActivity extends AppCompatActivity {
     private String staffId;
     Dialog dialog;
     EditText ip_position_dialog_et;
-    Button view_timkeeping_btn, set_position_btn, add_dialog_btn, cancel_dialog_btn,
+    Button view_timkeeping_btn, set_position_btn, add_dialog_btn,
             set_hourly_salary_btn, salary_list_btn;
     TextView title_dialog_tv;
     private List<Staff> staffList = new ArrayList<>();
@@ -69,7 +69,6 @@ public class StaffDetailActivity extends AppCompatActivity {
         title_dialog_tv = dialog.findViewById(R.id.title_dialog_tv);
         ip_position_dialog_et=dialog.findViewById(R.id.ip_shift_et);
         add_dialog_btn =dialog.findViewById(R.id.add_shift_btn);
-        cancel_dialog_btn =dialog.findViewById(R.id.cancel_btn);
 
         salary_list_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,12 +222,7 @@ public class StaffDetailActivity extends AppCompatActivity {
             }
         });
 
-        cancel_dialog_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+
         view_timkeeping_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
