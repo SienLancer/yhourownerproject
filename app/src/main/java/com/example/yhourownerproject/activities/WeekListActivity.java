@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -35,6 +37,7 @@ public class WeekListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private WeekAdapter adapter;
+    ImageButton back_btn;
     private List<Week> weekList = new ArrayList<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -43,12 +46,19 @@ public class WeekListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_week_list);
+        back_btn = findViewById(R.id.back_btn);
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new WeekAdapter(weekList);
         recyclerView.setAdapter(adapter);
 
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         // Load data from Firebase
         loadDataFromFirebase();
     }
