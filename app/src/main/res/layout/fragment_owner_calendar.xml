@@ -4,35 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F7F7F7"
     android:orientation="vertical"
     tools:context=".fragments.OwnerCalendarFragment">
 
-    <TextView
-        android:id="@+id/title_timetable_tv"
+    <LinearLayout
+        android:id="@+id/list_week_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/roboto_bold"
-        android:text="Timetable"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="50dp"
+        android:elevation="20dp"
+        android:background="@drawable/list_week_click_bg"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/start_end_date_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/roboto_light_italic"
-        android:text="TextView"
-        android:textColor="#000000"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title_timetable_tv" />
+        <TextView
+            android:id="@+id/title_timetable_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/roboto_bold"
+            android:text="Timetable"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/start_end_date_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:layout_marginVertical="15dp"
+            android:fontFamily="@font/roboto_light_italic"
+            android:text="00/00/0000 - 00/00/0000"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <ViewFlipper
         android:id="@+id/view_flipper"
@@ -42,7 +51,7 @@
         android:layout_marginTop="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/start_end_date_tv">
+        app:layout_constraintTop_toBottomOf="@id/list_week_layout">
 
         <LinearLayout
             android:id="@+id/layout_monday"
@@ -1897,40 +1906,35 @@
     </ViewFlipper>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/stastus_table_fabtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="104dp"
-        android:clickable="true"
-        android:text="List"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/list_calendar_btn"
-        app:layout_constraintStart_toEndOf="@+id/new_calendar_btn" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/new_calendar_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginBottom="100dp"
-        android:backgroundTint="@color/orange"
+        android:layout_marginBottom="60dp"
         android:clickable="true"
+        app:backgroundTint="@color/white"
         android:src="@drawable/add_new_ic"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view_flipper"
+        app:layout_constraintVertical_bias="0.958" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/list_calendar_btn"
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/stastus_table_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="50dp"
-        android:layout_marginBottom="100dp"
-        android:clickable="true"
-        android:backgroundTint="@color/orange"
-        android:src="@drawable/ic_calendar_list"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="76dp"
+        android:layout_marginEnd="30dp"
+        android:thumb="@drawable/thumb"
+        android:elevation="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:maxImageSize="40dp" /> <!-- Set the maxImageSize attribute to your desired size -->
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/list_week_layout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:track="@drawable/track" />
+
+    <!-- Set the maxImageSize attribute to your desired size -->
 
 
 

@@ -1,5 +1,6 @@
 package com.example.yhourownerproject.fragments;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -8,16 +9,22 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -43,18 +50,22 @@ import java.util.Random;
 
 public class OwnerCalendarFragment extends Fragment {
     private View mView;
-    Button view_calendar_btn, button_yes, button_no;
-    FloatingActionButton new_calendar_btn, list_calendar_btn;
+    LinearLayout list_week_layout;
+    Button view_calendar_btn;
+    FloatingActionButton new_calendar_btn;
     ViewFlipper viewFlipper;
     TextView start_end_date_tv;
-    Button view_timetable_btn, list_timetable_btn;
     EditText ip_shift_et;
     Button add_shift_btn,cancel_btn;
-    Dialog dialog, yesNoDialog;
+    Dialog dialog;
     FloatingActionButton stastus_table_fabtn;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     ValueEventListener listener;
+    SwitchCompat stastus_table_btn;
+    ImageView loading_imgv;
+    AlertDialog loadDialog;
+    Animation animation;
     TextView Sun1,Sun2,Sun3,
             Mon1,Mon2,Mon3,
             Tue1,Tue2,Tue3,
@@ -96,7 +107,7 @@ public class OwnerCalendarFragment extends Fragment {
 
 
         init();
-
+        loadDialog();
         getDataTable();
         checkStatusButton();
         itemClick();
@@ -131,109 +142,148 @@ public class OwnerCalendarFragment extends Fragment {
 
         });
 
-        stastus_table_fabtn.setOnClickListener(new View.OnClickListener() {
+
+        stastus_table_btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                yesNoDialog.show();
-            }
-        });
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    loadDialog.show();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    if (user != null) {
+                        String userId = user.getUid();
+                        DatabaseReference userRef = firebaseDatabase.getReference().child("User").child(userId).child("shopID");
+                        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String ownerShopId = snapshot.getValue(String.class);
+                                if (ownerShopId != null) {
+                                    DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar");
 
-        button_no.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                yesNoDialog.dismiss();
-            }
-        });
+                                    shopRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-        button_yes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseUser user = mAuth.getCurrentUser();
-                if (user != null) {
-                    String userId = user.getUid();
-                    DatabaseReference userRef = firebaseDatabase.getReference().child("User").child(userId).child("shopID");
-                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String ownerShopId = snapshot.getValue(String.class);
-                            if (ownerShopId != null) {
-                                DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar");
+                                            // Lấy tất cả các tuần
+                                            Iterable<DataSnapshot> weeks = dataSnapshot.getChildren();
+                                            DataSnapshot lastWeekSnapshot = null;
 
-                                shopRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                        // Lấy tất cả các tuần
-                                        Iterable<DataSnapshot> weeks = dataSnapshot.getChildren();
-                                        DataSnapshot lastWeekSnapshot = null;
-
-                                        // Lặp qua tất cả các tuần và lưu lại tuần cuối cùng
-                                        for (DataSnapshot weekSnapshot : weeks) {
-                                            lastWeekSnapshot = weekSnapshot;
-                                        }
-
-                                        if (lastWeekSnapshot != null) {
-                                            // Cập nhật dữ liệu của Sun3 trong tuần cuối cùng
-                                            DatabaseReference statusRef = lastWeekSnapshot.child("status").getRef();
-                                            String statusTable = lastWeekSnapshot.child("status").getValue(String.class);
-
-                                            if (statusTable != null && statusTable.equals("Opening")){
-                                                dialog_title.setText("Change of status");
-                                                dialog_message.setText("Are you sure you want to close the timetable?");
-                                                statusRef.setValue("Closed").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if (task.isSuccessful()) {
-                                                            yesNoDialog.dismiss();
-                                                            Toast.makeText(getContext(), "Timetable is closed", Toast.LENGTH_SHORT).show();
-                                                        } else {
-                                                            yesNoDialog.dismiss();
-                                                            Toast.makeText(getContext(), "Failed to add data", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    }
-                                                });
-                                            }else if(statusTable != null && statusTable.equals("Closed")){
-                                                dialog_title.setText("Change of status");
-                                                dialog_message.setText("Are you sure you want to open the timetable?");
-                                                statusRef.setValue("Opening").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if (task.isSuccessful()) {
-                                                            yesNoDialog.dismiss();
-                                                            Toast.makeText(getContext(), "The timetable is opening", Toast.LENGTH_SHORT).show();
-                                                        } else {
-                                                            yesNoDialog.dismiss();
-                                                            Toast.makeText(getContext(), "Failed to add data", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    }
-                                                });
+                                            // Lặp qua tất cả các tuần và lưu lại tuần cuối cùng
+                                            for (DataSnapshot weekSnapshot : weeks) {
+                                                lastWeekSnapshot = weekSnapshot;
                                             }
 
-                                        } else {
-                                            Toast.makeText(getContext(), "No weeks found", Toast.LENGTH_SHORT).show();
+                                            if (lastWeekSnapshot != null) {
+                                                // Cập nhật dữ liệu của Sun3 trong tuần cuối cùng
+                                                DatabaseReference statusRef = lastWeekSnapshot.child("status").getRef();
+
+                                                    statusRef.setValue("Opening").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()) {
+                                                                loadDialog.dismiss();
+                                                                Log.d("TAG", "onComplete: Timetable is opening");
+                                                            } else {
+                                                                Toast.makeText(getContext(), "Failed to add data", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+
+
+                                            } else {
+                                                Toast.makeText(getContext(), "No weeks found", Toast.LENGTH_SHORT).show();
+                                            }
                                         }
-                                    }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(getContext(), "Shop ID not found for this user", Toast.LENGTH_SHORT).show();
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getContext(), "Shop ID not found for this user", Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+                    }
+
                 } else {
-                    Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+                    loadDialog.show();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    if (user != null) {
+                        String userId = user.getUid();
+                        DatabaseReference userRef = firebaseDatabase.getReference().child("User").child(userId).child("shopID");
+                        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String ownerShopId = snapshot.getValue(String.class);
+                                if (ownerShopId != null) {
+                                    DatabaseReference shopRef = firebaseDatabase.getReference().child("Shop").child(ownerShopId).child("Calendar");
+
+                                    shopRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                            // Lấy tất cả các tuần
+                                            Iterable<DataSnapshot> weeks = dataSnapshot.getChildren();
+                                            DataSnapshot lastWeekSnapshot = null;
+
+                                            // Lặp qua tất cả các tuần và lưu lại tuần cuối cùng
+                                            for (DataSnapshot weekSnapshot : weeks) {
+                                                lastWeekSnapshot = weekSnapshot;
+                                            }
+
+                                            if (lastWeekSnapshot != null) {
+                                                // Cập nhật dữ liệu của Sun3 trong tuần cuối cùng
+                                                DatabaseReference statusRef = lastWeekSnapshot.child("status").getRef();
+
+                                                    statusRef.setValue("Closed").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()) {
+                                                                loadDialog.dismiss();
+                                                                Log.d("TAG", "onComplete: Timetable is closed");
+                                                            } else {
+                                                                Toast.makeText(getContext(), "Failed to add data", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+
+                                            } else {
+                                                Toast.makeText(getContext(), "No weeks found", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getContext(), "Shop ID not found for this user", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
+
+
+
 
 
 
@@ -245,7 +295,7 @@ public class OwnerCalendarFragment extends Fragment {
             }
         });
 
-        list_calendar_btn.setOnClickListener(new View.OnClickListener() {
+        list_week_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), WeekListActivity.class);
@@ -255,6 +305,20 @@ public class OwnerCalendarFragment extends Fragment {
         });
 
         return mView;
+    }
+    public void loadDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false); // Tùy chỉnh tùy theo nhu cầu của bạn
+        View view = getLayoutInflater().inflate(R.layout.custom_loading_dialog, null);
+        loading_imgv = view.findViewById(R.id.loading_imgv);
+
+        builder.setView(view);
+        loadDialog = builder.create();
+        //dialog.getWindow().setWindowAnimations(R.style.RotateAnimation);
+        loadDialog.getWindow().setLayout(130, 130);
+        loadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        animation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_animation);
+        loading_imgv.startAnimation(animation);
     }
 
 
@@ -290,13 +354,9 @@ public class OwnerCalendarFragment extends Fragment {
                                     String statusTable = lastWeekSnapshot.child("status").getValue(String.class);
 
                                     if (statusTable != null && statusTable.equals("Opening")){
-                                        dialog_title.setText("Change of status");
-                                        dialog_message.setText("Are you sure you want to close the timetable?");
-                                        stastus_table_fabtn.setBackgroundTintList(ColorStateList.valueOf(colorOpening));
+                                        stastus_table_btn.setChecked(true);
                                     }else if(statusTable != null && statusTable.equals("Closed")){
-                                        dialog_title.setText("Change of status");
-                                        dialog_message.setText("Are you sure you want to open the timetable?");
-                                        stastus_table_fabtn.setBackgroundTintList(ColorStateList.valueOf(colorClosed));
+                                        stastus_table_btn.setChecked(false);
                                     }
 
                                 } else {
@@ -452,10 +512,10 @@ public class OwnerCalendarFragment extends Fragment {
 
     public void init(){
         view_calendar_btn = mView.findViewById(R.id.view_calendar_btn);
-        stastus_table_fabtn = mView.findViewById(R.id.stastus_table_fabtn);
+        list_week_layout = mView.findViewById(R.id.list_week_layout);
         new_calendar_btn = mView.findViewById(R.id.new_calendar_btn);
+        stastus_table_btn = mView.findViewById(R.id.stastus_table_btn);
         title_timetable_tv = mView.findViewById(R.id.title_timetable_tv);
-        list_calendar_btn = mView.findViewById(R.id.list_calendar_btn);
         viewFlipper = mView.findViewById(R.id.view_flipper);
         start_end_date_tv = mView.findViewById(R.id.start_end_date_tv);
 
@@ -545,14 +605,6 @@ public class OwnerCalendarFragment extends Fragment {
         add_shift_btn =dialog.findViewById(R.id.add_shift_btn);
         cancel_btn =dialog.findViewById(R.id.cancel_btn);
 
-        yesNoDialog=new Dialog(getContext());
-        yesNoDialog.setContentView(R.layout.custom_yes_no_dialog);
-        yesNoDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        button_yes = yesNoDialog.findViewById(R.id.button_yes);
-        button_no = yesNoDialog.findViewById(R.id.button_no);
-        dialog_title = yesNoDialog.findViewById(R.id.dialog_title);
-        dialog_message = yesNoDialog.findViewById(R.id.dialog_message);
 
 
     }
