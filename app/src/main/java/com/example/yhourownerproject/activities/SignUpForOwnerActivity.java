@@ -110,7 +110,7 @@ public class SignUpForOwnerActivity extends AppCompatActivity {
                             Intent i = new Intent(SignUpForOwnerActivity.this, SignUpSuccessOwner.class);
                             startActivity(i);
                         } else {
-                            showCustomToast("Sign up failed!");
+                            showCustomToast(task.getException().getMessage());
                         }
                     }
                 });
