@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -42,13 +43,13 @@ import java.util.List;
 public class StaffDetailActivity extends AppCompatActivity {
 
     private TextView data_staff_name_tv, data_staff_dob_tv, data_staff_address_tv, data_staff_phone_tv,
-            data_staff_email_tv, data_staff_position_tv, data_staff_hourly_salary_tv;
+            data_staff_email_tv, data_staff_position_tv, data_staff_hourly_salary_tv, staff_active_tv;
     private String staffId;
-    Dialog dialog;
+    Dialog dialog, yesNoDialog;
     EditText ip_position_dialog_et;
     Button view_timkeeping_btn, set_position_btn, add_dialog_btn,
-            set_hourly_salary_btn, salary_list_btn;
-    TextView title_dialog_tv;
+            set_hourly_salary_btn, salary_list_btn, button_no, button_yes;
+    TextView title_dialog_tv, dialog_yes_no_title, dialog_yes_no_message;
     private List<Staff> staffList = new ArrayList<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -61,6 +62,7 @@ public class StaffDetailActivity extends AppCompatActivity {
         set_position_btn = findViewById(R.id.set_position_btn);
         set_hourly_salary_btn = findViewById(R.id.set_hourly_salary_btn);
         salary_list_btn = findViewById(R.id.salary_list_btn);
+        staff_active_tv = findViewById(R.id.staff_active_tv);
 
 
         dialog=new Dialog(StaffDetailActivity.this);
@@ -70,12 +72,27 @@ public class StaffDetailActivity extends AppCompatActivity {
         ip_position_dialog_et=dialog.findViewById(R.id.ip_shift_et);
         add_dialog_btn =dialog.findViewById(R.id.add_shift_btn);
 
+        yesNoDialog = new Dialog(StaffDetailActivity.this);
+        yesNoDialog.setContentView(R.layout.custom_yes_no_dialog);
+        yesNoDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog_yes_no_title = yesNoDialog.findViewById(R.id.dialog_yes_no_title);
+        dialog_yes_no_message = yesNoDialog.findViewById(R.id.dialog_yes_no_message);
+        button_yes = yesNoDialog.findViewById(R.id.button_yes);
+        button_no = yesNoDialog.findViewById(R.id.button_no);
+
         salary_list_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(StaffDetailActivity.this, SalaryListActivity.class);
                 intent.putExtra("id", staffId);
                 startActivity(intent);
+            }
+        });
+
+        staff_active_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setTextDialog();
             }
         });
 
@@ -232,6 +249,19 @@ public class StaffDetailActivity extends AppCompatActivity {
             }
         });
 
+        button_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeActiveStatus();
+            }
+        });
+        button_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                yesNoDialog.dismiss();
+            }
+        });
+
         init();
 
         getAndSetIntentData();
@@ -239,9 +269,150 @@ public class StaffDetailActivity extends AppCompatActivity {
         loadDataFromFirebase();
     }
 
+    private void changeActiveStatus() {
+        try {
+            FirebaseUser user = mAuth.getCurrentUser();
+            int colorOpening = ContextCompat.getColor(StaffDetailActivity.this, R.color.green);
+            int colorClosed = ContextCompat.getColor(StaffDetailActivity.this, R.color.red);
+            String userId = user.getUid();
+            if (user != null) {
+                firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        try {
+                            String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                            Log.d(TAG, "Owner Shop ID: " + ownerShopId);
+                            if (ownerShopId != null) {
+                                firebaseDatabase.getReference("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        try {
+                                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                                String userKey = userSnapshot.getKey();
+                                                if (userKey != null && userKey.equals(staffId)){
+
+                                                    Integer active = userSnapshot.child("availabilityStatus").getValue(Integer.class);
+                                                    if (active != null) {
+                                                        DatabaseReference userRef = firebaseDatabase.getReference("User").child(staffId).child("availabilityStatus");
+                                                        if (active == 1) {
+                                                            yesNoDialog.dismiss();
+                                                            userRef.setValue(0); // Nếu active == 1, thì set giá trị thành 0
+                                                        } else if (active == 0) {
+                                                            yesNoDialog.dismiss();
+                                                            userRef.setValue(1); // Nếu active == 0, thì set giá trị thành 1
+                                                        }
+                                                        return;
+                                                    }
+
+                                                    return;
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(StaffDetailActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else {
+                Toast.makeText(StaffDetailActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void setTextDialog() {
+        try {
+            yesNoDialog.show();
+            FirebaseUser user = mAuth.getCurrentUser();
+            int colorOpening = ContextCompat.getColor(StaffDetailActivity.this, R.color.green);
+            int colorClosed = ContextCompat.getColor(StaffDetailActivity.this, R.color.red);
+            String userId = user.getUid();
+            if (user != null) {
+                firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        try {
+                            String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                            Log.d(TAG, "Owner Shop ID: " + ownerShopId);
+                            if (ownerShopId != null) {
+                                firebaseDatabase.getReference("User").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        try {
+                                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                                String userKey = userSnapshot.getKey();
+                                                if (userKey != null && userKey.equals(staffId)){
+
+                                                    Integer active = userSnapshot.child("availabilityStatus").getValue(Integer.class);
+                                                    if (active != null) {
+                                                        if (active == 1) {
+                                                            dialog_yes_no_title.setText("Set Active Status");
+                                                            dialog_yes_no_message.setText("Do you want to set the active status to inactive?");
+                                                        } else if (active == 0) {
+                                                            dialog_yes_no_title.setText("Set Active Status");
+                                                            dialog_yes_no_message.setText("Do you want to set the inactive status to active?");
+                                                        }
+                                                        return;
+                                                    }
+
+                                                    return;
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(StaffDetailActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(StaffDetailActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else {
+                Toast.makeText(StaffDetailActivity.this, "User not logged in", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void loadDataFromFirebase() {
         try {
             FirebaseUser user = mAuth.getCurrentUser();
+            int colorOpening = ContextCompat.getColor(StaffDetailActivity.this, R.color.green);
+            int colorClosed = ContextCompat.getColor(StaffDetailActivity.this, R.color.red);
             String userId = user.getUid();
             if (user != null) {
                 firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
@@ -265,7 +436,12 @@ public class StaffDetailActivity extends AppCompatActivity {
                                                     String userEmail = userSnapshot.child("email").getValue(String.class);
                                                     String userPosition = userSnapshot.child("position").getValue(String.class);
                                                     Integer userSalary = userSnapshot.child("hourlySalary").getValue(Integer.class);
-
+                                                    Integer active = userSnapshot.child("availabilityStatus").getValue(Integer.class);
+                                                    if (active != null && active == 1){
+                                                        staff_active_tv.setBackgroundColor(colorOpening);
+                                                    }else if(active != null && active == 0){
+                                                        staff_active_tv.setBackgroundColor(colorClosed);
+                                                    }
                                                     data_staff_name_tv.setText(userName);
                                                     data_staff_dob_tv.setText(userDob);
                                                     data_staff_address_tv.setText(userAddress);

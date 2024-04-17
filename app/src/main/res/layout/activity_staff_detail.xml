@@ -163,6 +163,12 @@
             android:text="TextView" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/staff_active_tv"
+        android:layout_width="match_parent"
+        android:background="@color/orange"
+        android:layout_height="20dp"/>
+
     <Button
         android:id="@+id/view_timkeeping_btn"
         android:layout_width="match_parent"
