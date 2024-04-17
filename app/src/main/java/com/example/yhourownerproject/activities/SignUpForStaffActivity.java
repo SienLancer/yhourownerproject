@@ -2,16 +2,22 @@ package com.example.yhourownerproject.activities;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +50,10 @@ import java.util.Calendar;
 public class SignUpForStaffActivity extends AppCompatActivity {
     Button createAccS_btn;
     TextView staff_dob_sign_up_edt;
+    ImageView loading_imgv;
     private DatePickerDialog.OnDateSetListener dateSetListener;
+    AlertDialog loadDialog;
+    Animation animation;
     EditText usernameSSignUp_edt, pwSSignUp_edt,rePwSSignUp_edt, staff_name_sign_up_edt, staff_phone_sign_up_edt, staff_address_sign_up_edt;
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -61,7 +70,7 @@ public class SignUpForStaffActivity extends AppCompatActivity {
         usernameSSignUp_edt = findViewById(R.id.usernameSSignUp_edt);
         pwSSignUp_edt = findViewById(R.id.pwSSignUp_edt);
         rePwSSignUp_edt = findViewById(R.id.rePwSSignUp_edt);
-
+        loadDialog();
         createAccS_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,8 +97,24 @@ public class SignUpForStaffActivity extends AppCompatActivity {
         });
     }
 
+    public void loadDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpForStaffActivity.this);
+        builder.setCancelable(false); // Tùy chỉnh tùy theo nhu cầu của bạn
+        View view = getLayoutInflater().inflate(R.layout.custom_loading_dialog, null);
+        loading_imgv = view.findViewById(R.id.loading_imgv);
+
+        builder.setView(view);
+        loadDialog = builder.create();
+        //dialog.getWindow().setWindowAnimations(R.style.RotateAnimation);
+        loadDialog.getWindow().setLayout(130, 130);
+        loadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        animation = AnimationUtils.loadAnimation(SignUpForStaffActivity.this, R.anim.rotate_animation);
+        loading_imgv.startAnimation(animation);
+    }
+
     private void onClickSignUp() {
         try {
+            loadDialog.show();
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             String username, password, rePassword, fullName, address, dob;
             String phoneStr = staff_phone_sign_up_edt.getText().toString();
@@ -102,45 +127,52 @@ public class SignUpForStaffActivity extends AppCompatActivity {
             FirebaseUser user = mAuth.getCurrentUser();
             if (user != null) {
                 String userId = user.getUid();
-                firebaseDatabase.getReference().addValueEventListener(new ValueEventListener() {
+                firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
                         if (ownerShopId != null) {
-                            if (TextUtils.isEmpty(phoneStr) || TextUtils.isEmpty(fullName) || TextUtils.isEmpty(address) || TextUtils.isEmpty(dob) || TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(rePassword)) {
-                                Toast.makeText(getApplicationContext(), "You need to fill all required fields!", Toast.LENGTH_SHORT).show();
-                            } else if (!Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
-                                Toast.makeText(getApplicationContext(), "Invalid email address!", Toast.LENGTH_SHORT).show();
-                            } else if (password.length() < 6) {
-                                Toast.makeText(getApplicationContext(), "Password must be at least 6 characters long!", Toast.LENGTH_SHORT).show();
-                            } else {
-                                try {
-                                    int phone = Integer.parseInt(phoneStr);
-                                    if (password.equals(rePassword)) {
-                                        mAuth.createUserWithEmailAndPassword(username, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                            @Override
-                                            public void onSuccess(AuthResult authResult) {
-                                                String id = authResult.getUser().getUid();
-                                                Staff staff = new Staff(id, fullName, dob, address, phone, username, "", 0, 1, ownerShopId, password);
-                                                firebaseDatabase.getReference().child("User").child(id).setValue(staff);
-                                                Toast.makeText(getApplicationContext(), "Sign Up Success!", Toast.LENGTH_SHORT).show();
-                                                FirebaseAuth.getInstance().signOut();
-                                                Intent intent = new Intent(SignUpForStaffActivity.this, SignInForOwnerActivity.class);
-                                                startActivity(intent);
-                                                SignUpForStaffActivity.this.finish();
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(getApplicationContext(), "Registration failed!", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                            if (!TextUtils.isEmpty(password) && !TextUtils.isEmpty(rePassword)) {
+                                if (password.equals(rePassword)) {
+                                    if (TextUtils.isEmpty(phoneStr) || TextUtils.isEmpty(fullName) || TextUtils.isEmpty(address) || TextUtils.isEmpty(dob) || TextUtils.isEmpty(username)) {
+                                        Toast.makeText(getApplicationContext(), "You need to fill all required fields!", Toast.LENGTH_SHORT).show();
+                                    } else if (!Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
+                                        Toast.makeText(getApplicationContext(), "Invalid email address!", Toast.LENGTH_SHORT).show();
+                                    } else if (password.length() < 6) {
+                                        Toast.makeText(getApplicationContext(), "Password must be at least 6 characters long!", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(getApplicationContext(), "Mật khẩu không trùng nhau", Toast.LENGTH_SHORT).show();
+                                        try {
+                                            int phone = Integer.parseInt(phoneStr);
+                                            mAuth.createUserWithEmailAndPassword(username, password)
+                                                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                                            if (task.isSuccessful()) {
+                                                                loadDialog.dismiss();
+                                                                String id = task.getResult().getUser().getUid();
+                                                                Staff staff = new Staff(id, fullName, dob, address, phone, username, "", 0, 1, ownerShopId, password, 1);
+                                                                firebaseDatabase.getReference().child("User").child(id).setValue(staff);
+                                                                Toast.makeText(getApplicationContext(), "Sign Up Success!", Toast.LENGTH_SHORT).show();
+                                                                FirebaseAuth.getInstance().signOut();
+                                                                Intent intent = new Intent(SignUpForStaffActivity.this, SignInForOwnerActivity.class);
+                                                                startActivity(intent);
+                                                                SignUpForStaffActivity.this.finish();
+                                                            } else {
+                                                                loadDialog.dismiss();
+                                                                Toast.makeText(getApplicationContext(), "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                                Log.e(TAG, "Registration failed: " + task.getException().getMessage());
+                                                            }
+                                                        }
+                                                    });
+                                        } catch (NumberFormatException e) {
+                                            Toast.makeText(getApplicationContext(), "Invalid phone number", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                } catch (NumberFormatException e) {
-                                    Toast.makeText(getApplicationContext(), "Số điện thoại không hợp lệ", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
                                 }
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Please enter a password", Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Toast.makeText(SignUpForStaffActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
@@ -158,6 +190,7 @@ public class SignUpForStaffActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
 
