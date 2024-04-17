@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.yhourownerproject.R;
+import com.example.yhourownerproject.activities.ChangePasswordActivity;
 import com.example.yhourownerproject.activities.SignInForOwnerActivity;
 import com.example.yhourownerproject.activities.StaffListActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,7 +37,7 @@ public class OwnerProfileFragment extends Fragment {
     private View mView;
     private TextView owner_name_tv, owner_email_tv, owner_shop_name_tv, owner_shop_address_tv, owner_shop_phone_tv;
 
-    Button logoutS_btn, staff_list_btn;
+    Button logoutS_btn, staff_list_btn, profile_change_password_btn;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public OwnerProfileFragment() {
@@ -66,6 +67,7 @@ public class OwnerProfileFragment extends Fragment {
         owner_shop_name_tv = mView.findViewById(R.id.owner_shop_name_tv);
         owner_shop_address_tv = mView.findViewById(R.id.owner_shop_address_tv);
         owner_shop_phone_tv = mView.findViewById(R.id.owner_shop_phone_tv);
+        profile_change_password_btn = mView.findViewById(R.id.profile_change_password_btn);
 
         getUsername();
         getShopInfo();
@@ -76,6 +78,14 @@ public class OwnerProfileFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), SignInForOwnerActivity.class);
                 startActivity(intent);
                 getActivity().finish();
+            }
+        });
+
+        profile_change_password_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+                startActivity(intent);
             }
         });
 

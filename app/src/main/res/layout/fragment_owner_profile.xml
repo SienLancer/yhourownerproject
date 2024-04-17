@@ -114,6 +114,14 @@
         android:text="Staff List" />
 
     <Button
+        android:id="@+id/profile_change_password_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_signin_btn"
+        android:text="Change Password" />
+
+    <Button
         android:id="@+id/logoutS_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
