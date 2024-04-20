@@ -4,6 +4,9 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
+    </style>
 
     <style name="Theme.YhourOwnerProject" parent="Base.Theme.YhourOwnerProject" />
     <style name="RotateAnimation">

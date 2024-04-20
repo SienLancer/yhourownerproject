@@ -33,7 +33,6 @@ import com.google.firebase.database.ValueEventListener;
 
 public class SignInForOwnerActivity extends AppCompatActivity {
 
-    ImageButton backSignInO_imgBtn;
     EditText usernameOLogin_edt, pwOLogin_edt;
     TextView signUpO_txt;
     Button loginO_btn;
@@ -48,7 +47,6 @@ public class SignInForOwnerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in_for_owner);
         mAuth = FirebaseAuth.getInstance();
 
-        backSignInO_imgBtn = findViewById(R.id.backSignInO_imgBtn);
         signUpO_txt = findViewById(R.id.signUpO_txt);
         loginO_btn = findViewById(R.id.loginO_btn);
         pwOLogin_edt = findViewById(R.id.pwOLogin_edt);
