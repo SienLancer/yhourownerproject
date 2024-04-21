@@ -54,7 +54,7 @@ public class OwnerHomeFragment extends Fragment {
     Button staff_on_shift_btn;
 
     private View mView;
-    TextView today;
+    TextView today, no_data_on_shift_tv;
     ImageView qrcode_imgView;
     ImageView loading_imgv;
     AlertDialog loadDialog;
@@ -93,6 +93,7 @@ public class OwnerHomeFragment extends Fragment {
         onShiftDialog = new Dialog(getContext());
         onShiftDialog.setContentView(R.layout.custom_on_shift_dialog);
         onShiftDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        no_data_on_shift_tv = onShiftDialog.findViewById(R.id.no_data_on_shift_tv);
 
         recyclerView = onShiftDialog.findViewById(R.id.recycler_view_staff_on_shift);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -193,6 +194,7 @@ public class OwnerHomeFragment extends Fragment {
                                                                                 public void onDataChange(@NonNull DataSnapshot shopSnapshot) {
                                                                                     try {
                                                                                         if (shopSnapshot.exists()) {
+                                                                                            staffList.clear();
                                                                                             for (DataSnapshot userSnapshot : usersSnapshot.getChildren()) {
                                                                                                 String userKey = userSnapshot.getKey();
                                                                                                 Integer userRole = userSnapshot.child("role").getValue(Integer.class);
@@ -209,14 +211,21 @@ public class OwnerHomeFragment extends Fragment {
                                                                                                             String checkIn = timeSnapshot.child("checkIn").getValue(String.class);
                                                                                                             Log.d(TAG, "checkOutSnapshot: " + checkOutSnapshot);
                                                                                                             if (checkOutSnapshot == null || checkOutSnapshot.equals("")) {
+                                                                                                                no_data_on_shift_tv.setVisibility(View.INVISIBLE);
                                                                                                                 DataSnapshot shopData = shopSnapshot.child(ownerShopId);
                                                                                                                 if (shopData.exists()) {
                                                                                                                     String shopIdCheck = shopData.child("id").getValue(String.class);
                                                                                                                     if (shopIdCheck != null && shopIdCheck.equals(staffShopId)) {
+
                                                                                                                         Staff staff = new Staff(userId, userName, checkIn);
                                                                                                                         staffList.add(staff);
+
+
                                                                                                                     }
                                                                                                                 }
+                                                                                                                return;
+                                                                                                            }else {
+                                                                                                                no_data_on_shift_tv.setVisibility(View.VISIBLE);
                                                                                                             }
                                                                                                         }
 
