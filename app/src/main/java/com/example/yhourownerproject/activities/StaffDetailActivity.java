@@ -102,6 +102,7 @@ public class StaffDetailActivity extends AppCompatActivity {
                 try {
                     dialog.show();
                     title_dialog_tv.setText("Set Hourly Salary");
+                    ip_position_dialog_et.setHint("Enter a new hourly salary");
 
                     add_dialog_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -181,7 +182,7 @@ public class StaffDetailActivity extends AppCompatActivity {
                 try {
                     dialog.show();
                     title_dialog_tv.setText("Set Position");
-
+                    ip_position_dialog_et.setHint("Enter a new position");
                     add_dialog_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

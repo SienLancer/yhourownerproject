@@ -1,7 +1,11 @@
 package com.example.yhourownerproject.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -11,7 +15,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +26,7 @@ import android.widget.Toast;
 import com.example.yhourownerproject.R;
 import com.example.yhourownerproject.activities.ChangePasswordActivity;
 import com.example.yhourownerproject.activities.SignInForOwnerActivity;
+import com.example.yhourownerproject.activities.StaffDetailActivity;
 import com.example.yhourownerproject.activities.StaffListActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,9 +43,13 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 public class OwnerProfileFragment extends Fragment {
     private View mView;
-    private TextView owner_name_tv, owner_email_tv, owner_shop_name_tv, owner_shop_address_tv, owner_shop_phone_tv;
-
-    Button logoutS_btn, staff_list_btn, profile_change_password_btn;
+    ImageView edit_shop_name_img_view, loading_imgv;
+    private TextView owner_name_tv, owner_email_tv, owner_shop_name_tv, owner_shop_address_tv, owner_shop_phone_tv, title_dialog_tv;
+    Dialog dialog;
+    Button logoutS_btn, staff_list_btn, profile_change_password_btn, add_dialog_btn;
+    EditText ip_position_dialog_et;
+    AlertDialog loadDialog;
+    Animation animation;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public OwnerProfileFragment() {
@@ -68,9 +80,25 @@ public class OwnerProfileFragment extends Fragment {
         owner_shop_address_tv = mView.findViewById(R.id.owner_shop_address_tv);
         owner_shop_phone_tv = mView.findViewById(R.id.owner_shop_phone_tv);
         profile_change_password_btn = mView.findViewById(R.id.profile_change_password_btn);
+        edit_shop_name_img_view = mView.findViewById(R.id.edit_shop_name_img_view);
+
+        dialog=new Dialog(getContext());
+        dialog.setContentView(R.layout.custom_popup_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        title_dialog_tv = dialog.findViewById(R.id.title_dialog_tv);
+        ip_position_dialog_et=dialog.findViewById(R.id.ip_shift_et);
+        add_dialog_btn =dialog.findViewById(R.id.add_shift_btn);
 
         getUsername();
         getShopInfo();
+
+        edit_shop_name_img_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateShopName();
+            }
+        });
+
         logoutS_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -110,6 +138,94 @@ public class OwnerProfileFragment extends Fragment {
 
         owner_email_tv.setText(email);
 
+    }
+
+    public void loadDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false); // Tùy chỉnh tùy theo nhu cầu của bạn
+        View view = getLayoutInflater().inflate(R.layout.custom_loading_dialog, null);
+        loading_imgv = view.findViewById(R.id.loading_imgv);
+
+        builder.setView(view);
+        loadDialog = builder.create();
+        //dialog.getWindow().setWindowAnimations(R.style.RotateAnimation);
+        loadDialog.getWindow().setLayout(130, 130);
+        loadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        animation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_animation);
+        loading_imgv.startAnimation(animation);
+    }
+
+    public void updateShopName() {
+        try {
+            dialog.show();
+            title_dialog_tv.setText("Update Shop Name");
+            ip_position_dialog_et.setHint("Enter a new shop name");
+
+            add_dialog_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //loadDialog.show();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    String userId = user.getUid();
+                    if (user != null) {
+                        firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                                if (ownerShopId != null) {
+                                    DatabaseReference userReference = firebaseDatabase.getReference().child("Shop").child(ownerShopId);
+                                            userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    try {
+                                                        String shopName = ip_position_dialog_et.getText().toString().trim();
+
+                                                        if (shopName.isEmpty()) {
+                                                            // Kiểm tra xem bất kỳ trường nào có trống không
+                                                            Toast.makeText(getContext(), "Please fill in shop name", Toast.LENGTH_SHORT).show();
+                                                            return;
+                                                        }
+
+
+
+                                                        // Cập nhật dữ liệu vào cơ sở dữ liệu
+                                                        userReference.child("name").setValue(shopName);
+
+
+                                                        // Hiển thị Toast khi cập nhật thành công
+                                                        Toast.makeText(getContext(), "Shop name updated successfully", Toast.LENGTH_SHORT).show();
+                                                        //loadDialog.dismiss();
+                                                        dialog.dismiss();
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                }
+                                            });
+                                } else {
+                                    Toast.makeText(getContext(), "Shop not found", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    } else {
+                        Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void getUsername() {
@@ -170,7 +286,7 @@ public class OwnerProfileFragment extends Fragment {
 
                                             owner_shop_name_tv.setText(shopName);
                                             owner_shop_address_tv.setText(shopAddress);
-                                            owner_shop_phone_tv.setText(String.valueOf(shopPhone)); // Convert Integer to String before setting
+                                            owner_shop_phone_tv.setText("+84 "+shopPhone); // Convert Integer to String before setting
                                         }
 
                                         @Override
