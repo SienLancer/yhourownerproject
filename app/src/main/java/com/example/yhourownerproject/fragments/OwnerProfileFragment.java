@@ -43,7 +43,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 public class OwnerProfileFragment extends Fragment {
     private View mView;
-    ImageView edit_shop_name_img_view, loading_imgv;
+    ImageView edit_shop_name_img_view, loading_imgv, edit_shop_address_img_view;
     private TextView owner_name_tv, owner_email_tv, owner_shop_name_tv, owner_shop_address_tv, owner_shop_phone_tv, title_dialog_tv;
     Dialog dialog;
     Button logoutS_btn, staff_list_btn, profile_change_password_btn, add_dialog_btn;
@@ -81,6 +81,7 @@ public class OwnerProfileFragment extends Fragment {
         owner_shop_phone_tv = mView.findViewById(R.id.owner_shop_phone_tv);
         profile_change_password_btn = mView.findViewById(R.id.profile_change_password_btn);
         edit_shop_name_img_view = mView.findViewById(R.id.edit_shop_name_img_view);
+        edit_shop_address_img_view = mView.findViewById(R.id.edit_shop_address_img_view);
 
         dialog=new Dialog(getContext());
         dialog.setContentView(R.layout.custom_popup_dialog);
@@ -89,6 +90,8 @@ public class OwnerProfileFragment extends Fragment {
         ip_position_dialog_et=dialog.findViewById(R.id.ip_shift_et);
         add_dialog_btn =dialog.findViewById(R.id.add_shift_btn);
 
+        add_dialog_btn.setText("Update");
+
         getUsername();
         getShopInfo();
 
@@ -96,6 +99,13 @@ public class OwnerProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 updateShopName();
+            }
+        });
+
+        edit_shop_address_img_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateShopAddress();
             }
         });
 
@@ -158,7 +168,7 @@ public class OwnerProfileFragment extends Fragment {
     public void updateShopName() {
         try {
             dialog.show();
-            title_dialog_tv.setText("Update Shop Name");
+            title_dialog_tv.setText("Shop Name");
             ip_position_dialog_et.setHint("Enter a new shop name");
 
             add_dialog_btn.setOnClickListener(new View.OnClickListener() {
@@ -206,6 +216,80 @@ public class OwnerProfileFragment extends Fragment {
                                                 public void onCancelled(@NonNull DatabaseError error) {
                                                 }
                                             });
+                                } else {
+                                    Toast.makeText(getContext(), "Shop not found", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    } else {
+                        Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateShopAddress() {
+        try {
+            dialog.show();
+            title_dialog_tv.setText("Shop Address");
+            ip_position_dialog_et.setHint("Enter a new shop name");
+
+
+            add_dialog_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //loadDialog.show();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    String userId = user.getUid();
+                    if (user != null) {
+                        firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                                if (ownerShopId != null) {
+                                    DatabaseReference userReference = firebaseDatabase.getReference().child("Shop").child(ownerShopId);
+                                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            try {
+                                                String shopName = ip_position_dialog_et.getText().toString().trim();
+
+                                                if (shopName.isEmpty()) {
+                                                    // Kiểm tra xem bất kỳ trường nào có trống không
+                                                    Toast.makeText(getContext(), "Please fill in shop address", Toast.LENGTH_SHORT).show();
+                                                    return;
+                                                }
+
+
+
+                                                // Cập nhật dữ liệu vào cơ sở dữ liệu
+                                                userReference.child("address").setValue(shopName);
+
+
+                                                // Hiển thị Toast khi cập nhật thành công
+                                                Toast.makeText(getContext(), "Shop address updated successfully", Toast.LENGTH_SHORT).show();
+                                                //loadDialog.dismiss();
+                                                dialog.dismiss();
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                        }
+                                    });
                                 } else {
                                     Toast.makeText(getContext(), "Shop not found", Toast.LENGTH_SHORT).show();
                                 }
