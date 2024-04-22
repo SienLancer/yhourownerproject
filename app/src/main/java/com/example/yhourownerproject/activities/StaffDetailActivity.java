@@ -159,7 +159,7 @@ public class StaffDetailActivity extends AppCompatActivity {
                                     }
                                 } catch (NumberFormatException e) {
                                     // If inputText is not an integer, display error message
-                                    Toast.makeText(StaffDetailActivity.this, "Please enter a valid integer value", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(StaffDetailActivity.this, "Please fill in the number type", Toast.LENGTH_SHORT).show();
                                     // Clear the content of EditText to request re-entry
                                     ip_position_dialog_et.setText("");
                                     // Focus on EditText to prompt user to re-enter

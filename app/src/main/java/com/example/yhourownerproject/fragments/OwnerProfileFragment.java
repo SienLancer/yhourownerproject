@@ -43,7 +43,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 public class OwnerProfileFragment extends Fragment {
     private View mView;
-    ImageView edit_shop_name_img_view, loading_imgv, edit_shop_address_img_view;
+    ImageView edit_shop_name_img_view, loading_imgv, edit_shop_address_img_view, edit_shop_phone_img_view;
     private TextView owner_name_tv, owner_email_tv, owner_shop_name_tv, owner_shop_address_tv, owner_shop_phone_tv, title_dialog_tv;
     Dialog dialog;
     Button logoutS_btn, staff_list_btn, profile_change_password_btn, add_dialog_btn;
@@ -82,6 +82,7 @@ public class OwnerProfileFragment extends Fragment {
         profile_change_password_btn = mView.findViewById(R.id.profile_change_password_btn);
         edit_shop_name_img_view = mView.findViewById(R.id.edit_shop_name_img_view);
         edit_shop_address_img_view = mView.findViewById(R.id.edit_shop_address_img_view);
+        edit_shop_phone_img_view = mView.findViewById(R.id.edit_shop_phone_img_view);
 
         dialog=new Dialog(getContext());
         dialog.setContentView(R.layout.custom_popup_dialog);
@@ -106,6 +107,13 @@ public class OwnerProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 updateShopAddress();
+            }
+        });
+
+        edit_shop_phone_img_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateShopPhone();
             }
         });
 
@@ -262,9 +270,9 @@ public class OwnerProfileFragment extends Fragment {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             try {
-                                                String shopName = ip_position_dialog_et.getText().toString().trim();
+                                                String shopAddress = ip_position_dialog_et.getText().toString().trim();
 
-                                                if (shopName.isEmpty()) {
+                                                if (shopAddress.isEmpty()) {
                                                     // Kiểm tra xem bất kỳ trường nào có trống không
                                                     Toast.makeText(getContext(), "Please fill in shop address", Toast.LENGTH_SHORT).show();
                                                     return;
@@ -273,7 +281,7 @@ public class OwnerProfileFragment extends Fragment {
 
 
                                                 // Cập nhật dữ liệu vào cơ sở dữ liệu
-                                                userReference.child("address").setValue(shopName);
+                                                userReference.child("address").setValue(shopAddress);
 
 
                                                 // Hiển thị Toast khi cập nhật thành công
@@ -282,6 +290,86 @@ public class OwnerProfileFragment extends Fragment {
                                                 dialog.dismiss();
                                             } catch (Exception e) {
                                                 e.printStackTrace();
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getContext(), "Shop not found", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    } else {
+                        Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateShopPhone() {
+        try {
+            dialog.show();
+            title_dialog_tv.setText("Shop Phone Number");
+            ip_position_dialog_et.setHint("Enter a new shop phone number");
+
+
+            add_dialog_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //loadDialog.show();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    String userId = user.getUid();
+                    if (user != null) {
+                        firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String ownerShopId = snapshot.child("User").child(userId).child("shopID").getValue(String.class);
+                                if (ownerShopId != null) {
+                                    DatabaseReference userReference = firebaseDatabase.getReference().child("Shop").child(ownerShopId);
+                                    userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            try {
+                                                String shopPhone = ip_position_dialog_et.getText().toString().trim();
+                                                int newShopPhone = Integer.parseInt(shopPhone);
+                                                if (shopPhone.isEmpty()) {
+                                                    // Kiểm tra xem bất kỳ trường nào có trống không
+                                                    Toast.makeText(getContext(), "Please fill in shop phone number", Toast.LENGTH_SHORT).show();
+                                                    return;
+                                                }
+
+
+
+                                                // Cập nhật dữ liệu vào cơ sở dữ liệu
+                                                userReference.child("phoneNumber").setValue(newShopPhone);
+
+
+                                                // Hiển thị Toast khi cập nhật thành công
+                                                Toast.makeText(getContext(), "Shop phone number updated successfully", Toast.LENGTH_SHORT).show();
+                                                //loadDialog.dismiss();
+                                                dialog.dismiss();
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                // If inputText is not an integer, display error message
+                                                Toast.makeText(getContext(), "Please fill in the number type", Toast.LENGTH_SHORT).show();
+                                                // Clear the content of EditText to request re-entry
+                                                ip_position_dialog_et.setText("");
+                                                // Focus on EditText to prompt user to re-enter
+                                                ip_position_dialog_et.requestFocus();
                                             }
 
                                         }
