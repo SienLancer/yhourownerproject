@@ -109,6 +109,7 @@ public class NewShopActivity extends AppCompatActivity {
                 // Kiểm tra xem các trường có rỗng không
                 if (TextUtils.isEmpty(name) || TextUtils.isEmpty(address) || TextUtils.isEmpty(phoneNumberString)) {
                     Toast.makeText(NewShopActivity.this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                    loadDialog.dismiss();
                     return;
                 }
 
@@ -118,6 +119,7 @@ public class NewShopActivity extends AppCompatActivity {
                     phoneNumber = Integer.parseInt(phoneNumberString);
                 } catch (NumberFormatException e) {
                     Toast.makeText(NewShopActivity.this, "Invalid phone number format", Toast.LENGTH_SHORT).show();
+                    loadDialog.dismiss();
                     return;
                 }
 
@@ -141,15 +143,18 @@ public class NewShopActivity extends AppCompatActivity {
                                     startActivity(intent);
                                 } else {
                                     showCustomToast("Error adding new shop");
+                                    loadDialog.dismiss();
                                 }
                             }
                         });
             } else {
                 showCustomToast("User not found");
+                loadDialog.dismiss();
             }
         } catch (Exception e) {
             e.printStackTrace();
             showCustomToast("An error occurred");
+            loadDialog.dismiss();
         }
     }
 

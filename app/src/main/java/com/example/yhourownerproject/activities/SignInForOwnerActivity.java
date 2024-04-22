@@ -34,7 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 public class SignInForOwnerActivity extends AppCompatActivity {
 
     EditText usernameOLogin_edt, pwOLogin_edt;
-    TextView signUpO_txt;
+    TextView signUpO_txt, forgot_pass_txt;
     Button loginO_btn;
     ImageView loading_imgv;
     AlertDialog loadDialog;
@@ -51,10 +51,17 @@ public class SignInForOwnerActivity extends AppCompatActivity {
         loginO_btn = findViewById(R.id.loginO_btn);
         pwOLogin_edt = findViewById(R.id.pwOLogin_edt);
         usernameOLogin_edt = findViewById(R.id.usernameOLogin_edt);
+        forgot_pass_txt = findViewById(R.id.forgot_pass_txt);
 
         loadDialog();
 
-
+        forgot_pass_txt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(SignInForOwnerActivity.this, ForgotPasswordActivity.class);
+                startActivity(i);
+            }
+        });
 
         loginO_btn.setOnClickListener(new View.OnClickListener() {
             @Override

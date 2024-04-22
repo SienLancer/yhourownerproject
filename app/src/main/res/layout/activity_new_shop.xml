@@ -39,8 +39,8 @@
         android:hint="Full name of the shop"
         android:inputType="text"
         android:paddingLeft="15dp"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         android:textSize="16sp" />
 
 
@@ -56,8 +56,8 @@
         android:hint="Address"
         android:inputType="text"
         android:paddingLeft="15dp"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         android:textSize="16sp" />
 
     <EditText
@@ -71,8 +71,8 @@
         android:hint="Phone number"
         android:inputType="number"
         android:paddingLeft="15dp"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white"
+        android:textColor="@color/black"
+        android:textColorHint="@color/black"
         android:textSize="16sp" />
 
 
@@ -85,7 +85,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/bg_signin_btn"
-        android:text="Create account"
+        android:text="Create shop"
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 

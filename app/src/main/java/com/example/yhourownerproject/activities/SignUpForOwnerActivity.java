@@ -116,10 +116,12 @@ public class SignUpForOwnerActivity extends AppCompatActivity {
                 });
             } else {
                 showCustomToast("Password does not match");
+                loadDialog.dismiss();
             }
         } catch (Exception e) {
             e.printStackTrace();
             showCustomToast("An error occurred");
+            loadDialog.dismiss();
         }
     }
 

@@ -38,7 +38,7 @@ public class StaffOnShiftAdapter extends RecyclerView.Adapter<StaffOnShiftAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Staff staff = staffs.get(position);
         holder.staff_name_on_shift_tv.setText(staff.getName());
-        holder.staff_check_in_on_shift_tv.setText(staff.getCheckIn());
+        holder.staff_check_in_on_shift_tv.setText("Check in at "+staff.getCheckIn());
 
     }
 
