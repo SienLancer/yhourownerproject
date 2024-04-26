@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,7 @@ import com.example.yhourownerproject.adapter.StaffAdapter;
 import com.example.yhourownerproject.roles.Staff;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -43,12 +46,14 @@ import java.util.List;
 public class StaffDetailActivity extends AppCompatActivity {
 
     private TextView data_staff_name_tv, data_staff_dob_tv, data_staff_address_tv, data_staff_phone_tv,
-            data_staff_email_tv, data_staff_position_tv, data_staff_hourly_salary_tv, staff_active_tv;
+            data_staff_email_tv, data_staff_position_tv, data_staff_hourly_salary_tv;
+    FloatingActionButton staff_active_tv;
     private String staffId;
     Dialog dialog, yesNoDialog;
     EditText ip_position_dialog_et;
-    Button view_timkeeping_btn, set_position_btn, add_dialog_btn,
-            set_hourly_salary_btn, salary_list_btn, button_no, button_yes;
+    ImageButton set_position_btn,set_hourly_salary_btn, salary_list_btn;
+    Button view_timkeeping_btn, add_dialog_btn,
+             button_no, button_yes;
     TextView title_dialog_tv, dialog_yes_no_title, dialog_yes_no_message;
     private List<Staff> staffList = new ArrayList<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -412,8 +417,6 @@ public class StaffDetailActivity extends AppCompatActivity {
     private void loadDataFromFirebase() {
         try {
             FirebaseUser user = mAuth.getCurrentUser();
-            int colorOpening = ContextCompat.getColor(StaffDetailActivity.this, R.color.green);
-            int colorClosed = ContextCompat.getColor(StaffDetailActivity.this, R.color.red);
             String userId = user.getUid();
             if (user != null) {
                 firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
@@ -439,9 +442,9 @@ public class StaffDetailActivity extends AppCompatActivity {
                                                     Integer userSalary = userSnapshot.child("hourlySalary").getValue(Integer.class);
                                                     Integer active = userSnapshot.child("availabilityStatus").getValue(Integer.class);
                                                     if (active != null && active == 1){
-                                                        staff_active_tv.setBackgroundColor(colorOpening);
+                                                        staff_active_tv.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.green)));
                                                     }else if(active != null && active == 0){
-                                                        staff_active_tv.setBackgroundColor(colorClosed);
+                                                        staff_active_tv.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.red)));
                                                     }
                                                     data_staff_name_tv.setText(userName);
                                                     data_staff_dob_tv.setText(userDob);
