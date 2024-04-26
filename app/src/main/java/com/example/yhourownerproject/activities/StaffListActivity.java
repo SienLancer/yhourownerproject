@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -41,6 +44,7 @@ public class StaffListActivity extends AppCompatActivity {
     ViewPager2 viewPager2;
     FloatingActionButton create_staff_btn;
     MyViewPagerAdapter myViewPagerAdapter;
+    ImageButton back_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +52,23 @@ public class StaffListActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_staff_list);
         create_staff_btn = findViewById(R.id.create_staff_btn);
+        back_btn = findViewById(R.id.back_imgBtn);
         tabLayout = findViewById(R.id.tab_layout);
         viewPager2 = findViewById(R.id.view_pager);
-        myViewPagerAdapter = new MyViewPagerAdapter(this);
+
+        tabLayout.addTab(tabLayout.newTab().setText("Available"));
+        tabLayout.addTab(tabLayout.newTab().setText("Not Available"));
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        myViewPagerAdapter = new MyViewPagerAdapter(fragmentManager, getLifecycle());
         viewPager2.setAdapter(myViewPagerAdapter);
 
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         create_staff_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,7 +85,6 @@ public class StaffListActivity extends AppCompatActivity {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     private EditText editTextEmail;
     private Button buttonSendEmail;
+    ImageButton back_imgBtn;
     private FirebaseAuth mAuth;
 
     @Override
@@ -35,7 +37,14 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         editTextEmail = findViewById(R.id.send_email_edt);
         buttonSendEmail = findViewById(R.id.send_email_btn);
+        back_imgBtn = findViewById(R.id.back_imgBtn);
 
+        back_imgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         buttonSendEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

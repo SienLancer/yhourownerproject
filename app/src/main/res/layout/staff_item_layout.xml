@@ -4,27 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp"
+    android:background="@drawable/head_item_on_shift_bg"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/staff_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:padding="8dp"
+        android:layout_marginStart="40dp"
         android:text="Staff Name"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textSize="14sp"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/detail_staff_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
-        android:text="Detail"
+        android:layout_marginEnd="10dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="15dp"
+        android:layout_marginVertical="10dp"
+        android:src="@drawable/week_detail_ic"
+        android:background="@drawable/week_detail_btn_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
