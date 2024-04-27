@@ -34,9 +34,8 @@ public class SalaryAdapter extends RecyclerView.Adapter<SalaryAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Salary salary = salaries.get(position);
-        holder.start_date_after_payday_tv.setText("Start date after payday: " + salary.getStartDate());
-        holder.current_salary_tv.setText("Current salary: " + salary.getCurrentSalary()+"");
-        holder.status_salary_tv.setText("Status: " + salary.getStatus());
+        holder.start_date_after_payday_tv.setText("Start date: " + salary.getStartDate());
+        holder.current_salary_tv.setText(salary.getCurrentSalary()+"");
         holder.payday_tv.setText("Payday: " + salary.getPayDay());
 
 //        Timekeeping timekeeping = timekeepings.get(position);
@@ -52,14 +51,13 @@ public class SalaryAdapter extends RecyclerView.Adapter<SalaryAdapter.ViewHolder
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView start_date_after_payday_tv, current_salary_tv, status_salary_tv, payday_tv;
+        TextView start_date_after_payday_tv, current_salary_tv, payday_tv;
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             start_date_after_payday_tv = itemView.findViewById(R.id.start_date_after_payday_tv);
             current_salary_tv = itemView.findViewById(R.id.current_salary_tv);
-            status_salary_tv = itemView.findViewById(R.id.status_salary_tv);
             payday_tv = itemView.findViewById(R.id.payday_tv);
 
         }
