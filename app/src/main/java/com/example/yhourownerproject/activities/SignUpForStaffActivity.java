@@ -152,7 +152,7 @@ public class SignUpForStaffActivity extends AppCompatActivity {
                                                                 String id = task.getResult().getUser().getUid();
                                                                 Staff staff = new Staff(id, fullName, dob, address, phone, username, "", 0, 1, ownerShopId, password, 1);
                                                                 firebaseDatabase.getReference().child("User").child(id).setValue(staff);
-                                                                Toast.makeText(getApplicationContext(), "Sign Up Success!", Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(getApplicationContext(), "Account created for staff successfully!", Toast.LENGTH_SHORT).show();
                                                                 FirebaseAuth.getInstance().signOut();
                                                                 Intent intent = new Intent(SignUpForStaffActivity.this, SignInForOwnerActivity.class);
                                                                 startActivity(intent);
@@ -165,28 +165,34 @@ public class SignUpForStaffActivity extends AppCompatActivity {
                                                         }
                                                     });
                                         } catch (NumberFormatException e) {
+                                            loadDialog.dismiss();
                                             Toast.makeText(getApplicationContext(), "Invalid phone number", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 } else {
+                                    loadDialog.dismiss();
                                     Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
+                                loadDialog.dismiss();
                                 Toast.makeText(getApplicationContext(), "Please enter a password", Toast.LENGTH_SHORT).show();
                             }
                         } else {
+                            loadDialog.dismiss();
                             Toast.makeText(SignUpForStaffActivity.this, "Shop not found", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
+                        loadDialog.dismiss();
                         Toast.makeText(SignUpForStaffActivity.this, "Error", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         } catch (Exception e) {
             e.printStackTrace();
+            loadDialog.dismiss();
             Toast.makeText(getApplicationContext(), "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
         }
     }

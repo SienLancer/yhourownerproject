@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -34,6 +36,7 @@ public class TimekeepingListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TimekeeppingAdapter adapter;
     String timekeepingId;
+    ImageButton back_btn;
     private List<Timekeeping> timekeepingList = new ArrayList<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -42,11 +45,18 @@ public class TimekeepingListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timekeeping_list);
-
+        back_btn = findViewById(R.id.back_imgBtn);
         recyclerView = findViewById(R.id.timekeeping_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new TimekeeppingAdapter(timekeepingList);
         recyclerView.setAdapter(adapter);
+
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         getAndSetIntentData();
         // Load data from Firebase
         loadDataFromFirebase();

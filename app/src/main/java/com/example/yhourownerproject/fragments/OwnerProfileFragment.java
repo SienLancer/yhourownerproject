@@ -44,9 +44,10 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 public class OwnerProfileFragment extends Fragment {
     private View mView;
     ImageView edit_shop_name_img_view, loading_imgv, edit_shop_address_img_view, edit_shop_phone_img_view;
-    private TextView owner_name_tv, owner_email_tv, owner_shop_name_tv, owner_shop_address_tv, owner_shop_phone_tv, title_dialog_tv;
-    Dialog dialog;
-    Button logoutS_btn, staff_list_btn, profile_change_password_btn, add_dialog_btn;
+    TextView owner_name_tv, owner_email_tv, owner_shop_name_tv, owner_shop_address_tv, owner_shop_phone_tv;
+    Dialog dialog, yesNoDialog;
+    TextView title_dialog_tv, dialog_yes_no_title, dialog_yes_no_message;
+    Button logoutS_btn, staff_list_btn, profile_change_password_btn, add_dialog_btn, button_no, button_yes;
     EditText ip_position_dialog_et;
     AlertDialog loadDialog;
     Animation animation;
@@ -93,6 +94,17 @@ public class OwnerProfileFragment extends Fragment {
 
         add_dialog_btn.setText("Update");
 
+        yesNoDialog = new Dialog(getContext());
+        yesNoDialog.setContentView(R.layout.custom_yes_no_dialog);
+        yesNoDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog_yes_no_title = yesNoDialog.findViewById(R.id.dialog_yes_no_title);
+        dialog_yes_no_message = yesNoDialog.findViewById(R.id.dialog_yes_no_message);
+        button_yes = yesNoDialog.findViewById(R.id.button_yes);
+        button_no = yesNoDialog.findViewById(R.id.button_no);
+
+        dialog_yes_no_title.setText("Log out");
+        dialog_yes_no_message.setText("Do you want to log out?");
+
         getUsername();
         getShopInfo();
 
@@ -116,14 +128,27 @@ public class OwnerProfileFragment extends Fragment {
                 updateShopPhone();
             }
         });
-
-        logoutS_btn.setOnClickListener(new View.OnClickListener() {
+        button_yes.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                yesNoDialog.dismiss();
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getActivity(), SignInForOwnerActivity.class);
                 startActivity(intent);
                 getActivity().finish();
+            }
+        });
+        logoutS_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                yesNoDialog.show();
+            }
+        });
+
+        button_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                yesNoDialog.dismiss();
             }
         });
 

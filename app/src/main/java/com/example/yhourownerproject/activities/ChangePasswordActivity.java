@@ -105,6 +105,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                                                                 } else {
                                                                     // Failed to update password
                                                                     Toast.makeText(ChangePasswordActivity.this, "Failed to update password", Toast.LENGTH_SHORT).show();
+                                                                    Log.d("TAG", "onDataChange: " + task.getException().getMessage());
                                                                 }
                                                             });
                                                 } else {
@@ -123,6 +124,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            Log.d("TAG", "onDataChange: " + e.getMessage());
                         }
                     }
 

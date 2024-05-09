@@ -4,6 +4,9 @@ import static android.content.ContentValues.TAG;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -35,6 +38,7 @@ public class SalaryListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private SalaryAdapter adapter;
     String salaryId;
+    ImageButton back_btn;
     private List<Salary> salaries = new ArrayList<>();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -43,11 +47,18 @@ public class SalaryListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salary_list);
-
+        back_btn = findViewById(R.id.back_imgBtn);
         recyclerView = findViewById(R.id.salary_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new SalaryAdapter(salaries);
         recyclerView.setAdapter(adapter);
+
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         getAndSetIntentData();
         // Load data from Firebase
         loadDataFromFirebase();

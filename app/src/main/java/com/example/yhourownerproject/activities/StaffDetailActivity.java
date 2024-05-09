@@ -51,6 +51,7 @@ public class StaffDetailActivity extends AppCompatActivity {
     private String staffId;
     Dialog dialog, yesNoDialog;
     EditText ip_position_dialog_et;
+    ImageButton back_btn;
     ImageButton set_position_btn,set_hourly_salary_btn, salary_list_btn;
     Button view_timkeeping_btn, add_dialog_btn,
              button_no, button_yes;
@@ -68,7 +69,7 @@ public class StaffDetailActivity extends AppCompatActivity {
         set_hourly_salary_btn = findViewById(R.id.set_hourly_salary_btn);
         salary_list_btn = findViewById(R.id.salary_list_btn);
         staff_active_tv = findViewById(R.id.staff_active_tv);
-
+        back_btn = findViewById(R.id.back_imgBtn);
 
         dialog=new Dialog(StaffDetailActivity.this);
         dialog.setContentView(R.layout.custom_popup_dialog);
@@ -85,6 +86,13 @@ public class StaffDetailActivity extends AppCompatActivity {
         button_yes = yesNoDialog.findViewById(R.id.button_yes);
         button_no = yesNoDialog.findViewById(R.id.button_no);
 
+
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         salary_list_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -348,8 +356,6 @@ public class StaffDetailActivity extends AppCompatActivity {
         try {
             yesNoDialog.show();
             FirebaseUser user = mAuth.getCurrentUser();
-            int colorOpening = ContextCompat.getColor(StaffDetailActivity.this, R.color.green);
-            int colorClosed = ContextCompat.getColor(StaffDetailActivity.this, R.color.red);
             String userId = user.getUid();
             if (user != null) {
                 firebaseDatabase.getReference().addListenerForSingleValueEvent(new ValueEventListener() {
